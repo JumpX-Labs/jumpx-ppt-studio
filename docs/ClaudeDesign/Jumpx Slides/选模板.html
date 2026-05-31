@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jumpx Slides · 选模板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper-0:#FAF8F2;--paper-1:#FFFFFF;--paper-2:#F1EEE4;--paper-3:#E9E5D8;
+  --hair:#E4DFD0;--hair-soft:#EDE9DD;
+  --ink:#23251F;--ink-2:#5E5F54;--ink-3:#94927F;--ink-4:#B6B3A1;
+  --pine:#2C5E48;--pine-deep:#1E4636;--pine-soft:#E7EFE8;--pine-line:#CFE0D3;
+  --amber:#B07A2E;--amber-soft:#F4ECDD;
+  --radius:14px;
+  --shadow-card:0 1px 2px rgba(35,37,31,.04), 0 18px 48px -22px rgba(35,37,31,.28);
+  --shadow-slide:0 2px 6px rgba(35,37,31,.06), 0 30px 60px -28px rgba(35,37,31,.34);
+  --font-cn:"Noto Sans SC", system-ui, sans-serif;
+  --font-num:"Space Grotesk", var(--font-cn);
+  --font-mono:"Space Mono", ui-monospace, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#DCD9CF;color:var(--ink);font-family:var(--font-cn);-webkit-font-smoothing:antialiased}
+body{padding:48px 40px 96px}
+
+.page-head{max-width:1440px;margin:0 auto 30px}
+.brandline{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.glyph{width:30px;height:30px;border-radius:8px;background:var(--pine);position:relative;flex:none}
+.glyph::before{content:"";position:absolute;inset:7px 7px auto 7px;height:4px;border-radius:2px;background:#fff;opacity:.92}
+.glyph::after{content:"";position:absolute;inset:14px 7px 7px 7px;border-radius:2px;background:#fff;opacity:.42}
+.page-head h1{font-size:20px;font-weight:500}
+.page-head h1 b{font-family:var(--font-num);font-weight:600}
+.page-head .sub{color:var(--ink-3);font-size:13px;margin-left:auto;font-family:var(--font-num)}
+.note{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:1px;background:var(--hair);border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden}
+.note .cell{background:var(--paper-0);padding:18px 20px}
+.note .k{font-family:var(--font-num);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin-bottom:9px;font-weight:600}
+.note p{font-size:12.5px;line-height:1.7;color:var(--ink-2)}
+
+.option{max-width:1440px;margin:0 auto}
+.opt-label{display:flex;align-items:baseline;gap:14px;margin:44px 0 16px}
+.opt-tag{font-family:var(--font-num);font-size:12px;font-weight:600;letter-spacing:.1em;color:#fff;background:var(--ink);padding:4px 10px;border-radius:6px}
+.opt-label h2{font-size:17px;font-weight:600}
+.opt-label .d{font-size:13px;color:var(--ink-3)}
+
+.app{width:1440px;height:880px;background:var(--paper-0);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow-card);overflow:hidden;display:flex;flex-direction:column}
+
+/* —— 顶栏 —— */
+.topbar{height:60px;flex:none;display:flex;align-items:center;gap:18px;padding:0 20px;border-bottom:1px solid var(--hair);background:var(--paper-1)}
+.tb-brand{display:flex;align-items:center;gap:9px}
+.tb-glyph{width:24px;height:24px;border-radius:6px;background:var(--pine);position:relative}
+.tb-glyph::before{content:"";position:absolute;inset:6px 6px auto 6px;height:3px;border-radius:2px;background:#fff;opacity:.92}
+.tb-glyph::after{content:"";position:absolute;inset:11px 6px 6px 6px;border-radius:2px;background:#fff;opacity:.42}
+.tb-name{font-family:var(--font-num);font-weight:600;font-size:14px}
+.tb-divline{width:1px;height:22px;background:var(--hair)}
+.proj .t{font-size:13.5px;font-weight:500}.proj .chap{font-size:13.5px;color:var(--ink-3)}
+.steps{display:flex;align-items:center;margin:0 auto}
+.step{display:flex;align-items:center;gap:9px;padding:0 4px}
+.step .num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-num);font-size:11px;font-weight:600;border:1.5px solid var(--hair);color:var(--ink-4);background:var(--paper-1)}
+.step .lb{font-size:12.5px;color:var(--ink-3)}
+.step.done .num{background:var(--pine);border-color:var(--pine);color:#fff}
+.step.done .lb{color:var(--ink-2)}
+.step.cur .num{border-color:var(--pine);color:var(--pine);background:var(--pine-soft);box-shadow:0 0 0 3px rgba(44,94,72,.1)}
+.step.cur .lb{color:var(--pine);font-weight:600}
+.step .bar{width:30px;height:1.5px;background:var(--hair);margin:0 6px}
+.step .bar.fill{background:var(--pine)}
+.tb-right{display:flex;align-items:center;gap:12px;margin-left:auto}
+.btn{font-family:var(--font-cn);font-size:13px;border-radius:9px;padding:9px 15px;border:1px solid var(--hair);background:var(--paper-1);color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:7px}
+.btn svg{width:15px;height:15px;color:var(--ink-3)}
+.btn.primary{background:var(--pine);border-color:var(--pine);color:#fff;font-weight:500}
+.btn.primary svg{color:#fff}
+
+/* ===== 模板缩略图(cqw 自适应,mini/big 通用) ===== */
+.cv{position:relative;width:100%;aspect-ratio:16/9;border-radius:7px;overflow:hidden;container-type:inline-size;border:1px solid rgba(35,37,31,.06)}
+.cv>*{position:absolute}
+/* 1 素白 */
+.t-plain{background:#fff}
+.t-plain .kick{left:9cqw;top:18cqw;width:15%;height:1.6cqw;background:var(--pine);border-radius:1cqw}
+.t-plain .tt1{left:9cqw;top:30cqw;width:66%;height:7cqw;background:#23251F;border-radius:1.4cqw}
+.t-plain .tt2{left:9cqw;top:40cqw;width:42%;height:7cqw;background:#23251F;border-radius:1.4cqw}
+.t-plain .rule{left:9cqw;right:9cqw;top:70cqw;height:1px;background:#E4DFD0}
+.t-plain .dot{left:9cqw;top:78cqw;width:3cqw;height:3cqw;background:var(--pine);transform:rotate(45deg)}
+/* 2 学术绿 */
+.t-pine{background:#fff}
+.t-pine .band{left:0;top:0;right:0;height:52cqw;background:linear-gradient(150deg,#2C5E48,#1E4636)}
+.t-pine .kick{left:9cqw;top:13cqw;width:14%;height:1.6cqw;background:rgba(255,255,255,.6);border-radius:1cqw}
+.t-pine .tt1{left:9cqw;top:24cqw;width:60%;height:7cqw;background:#fff;border-radius:1.4cqw}
+.t-pine .tt2{left:9cqw;top:34cqw;width:38%;height:7cqw;background:rgba(255,255,255,.85);border-radius:1.4cqw}
+.t-pine .l1{left:9cqw;top:64cqw;width:70%;height:2.4cqw;background:#E4DFD0;border-radius:1cqw}
+.t-pine .l2{left:9cqw;top:71cqw;width:54%;height:2.4cqw;background:#ECE9DF;border-radius:1cqw}
+/* 3 牛皮纸 */
+.t-kraft{background:#E7DBC3}
+.t-kraft .stamp{right:9cqw;top:12cqw;width:14cqw;height:14cqw;border-radius:50%;border:1.6cqw solid #B07A2E;opacity:.7}
+.t-kraft .kick{left:9cqw;top:16cqw;width:16%;height:1.6cqw;background:#B07A2E;border-radius:1cqw}
+.t-kraft .tt1{left:9cqw;top:34cqw;width:62%;height:7cqw;background:#4A3B27;border-radius:1.4cqw}
+.t-kraft .tt2{left:9cqw;top:44cqw;width:40%;height:7cqw;background:#6b573a;border-radius:1.4cqw}
+.t-kraft .rule{left:9cqw;width:30%;top:74cqw;height:1.4cqw;background:#4A3B27;border-radius:1cqw}
+/* 4 夜读 */
+.t-dark{background:#23251F}
+.t-dark .kick{left:9cqw;top:18cqw;width:15%;height:1.6cqw;background:#B07A2E;border-radius:1cqw}
+.t-dark .tt1{left:9cqw;top:30cqw;width:66%;height:7cqw;background:#FAF8F2;border-radius:1.4cqw}
+.t-dark .tt2{left:9cqw;top:40cqw;width:42%;height:7cqw;background:rgba(250,248,242,.75);border-radius:1.4cqw}
+.t-dark .rule{left:9cqw;width:26%;top:72cqw;height:1.4cqw;background:#B07A2E;border-radius:1cqw}
+.t-dark .dot{right:10cqw;bottom:10cqw;width:6cqw;height:6cqw;border-radius:50%;background:#2C5E48}
+/* 5 杂志 */
+.t-mag{background:#fff}
+.t-mag .blk{right:0;bottom:0;width:46%;height:62cqw;background:#B07A2E}
+.t-mag .blk2{right:14%;top:0;width:10cqw;height:10cqw;border-radius:50%;background:#2C5E48}
+.t-mag .tt1{left:8cqw;top:30cqw;width:80%;height:12cqw;background:#23251F;border-radius:1cqw}
+.t-mag .tt2{left:8cqw;top:46cqw;width:50%;height:12cqw;background:#23251F;border-radius:1cqw}
+.t-mag .kick{left:8cqw;top:18cqw;width:20%;height:2cqw;background:#B07A2E;border-radius:1cqw}
+/* 6 图表报告 */
+.t-data{background:#fff}
+.t-data .kick{left:9cqw;top:13cqw;width:30%;height:2cqw;background:#23251F;border-radius:1cqw}
+.t-data .tt2{left:9cqw;top:19cqw;width:18%;height:2cqw;background:#94927F;border-radius:1cqw}
+.t-data .base{left:9cqw;right:9cqw;bottom:16cqw;height:1px;background:#94927F}
+.t-data .bar{bottom:16cqw;width:9%;background:#2C5E48;border-radius:1cqw 1cqw 0 0}
+.t-data .b1{left:14cqw;height:18cqw}.t-data .b2{left:30cqw;height:30cqw}
+.t-data .b3{left:46cqw;height:24cqw;background:#7FA690}.t-data .b4{left:62cqw;height:38cqw}
+.t-data .b5{left:78cqw;height:14cqw;background:#7FA690}
+/* 7 圆润 */
+.t-round{background:#E7EFE8}
+.t-round .pill{left:9cqw;top:30cqw;width:60%;height:11cqw;background:#2C5E48;border-radius:99px}
+.t-round .pill2{left:9cqw;top:45cqw;width:36%;height:8cqw;background:#fff;border-radius:99px}
+.t-round .circ{right:11cqw;top:13cqw;width:18cqw;height:18cqw;border-radius:50%;background:#fff}
+.t-round .circ2{right:14cqw;top:16cqw;width:9cqw;height:9cqw;border-radius:50%;background:#B07A2E}
+.t-round .kick{left:9cqw;top:18cqw;width:18%;height:2cqw;background:var(--pine);border-radius:99px}
+
+/* ===== 方向 A:纯网格 ===== */
+.gridwrap{flex:1;display:flex;flex-direction:column;min-height:0}
+.agentbar{display:flex;align-items:center;gap:11px;padding:14px 28px;border-bottom:1px solid var(--hair-soft);background:var(--paper-1)}
+.agentbar .ai{width:26px;height:26px;border-radius:8px;background:var(--pine-soft);border:1px solid var(--pine-line);display:grid;place-items:center;flex:none}
+.agentbar .ai i{width:8px;height:8px;border-radius:50%;background:var(--pine)}
+.agentbar .msg{font-size:13px;color:var(--ink-2)}
+.agentbar .msg b{color:var(--ink);font-weight:600}
+.agentbar .count{margin-left:auto;font-family:var(--font-num);font-size:12px;color:var(--ink-3)}
+.grid{flex:1;overflow:hidden;padding:26px 28px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;align-content:start}
+.tcard{cursor:pointer;display:flex;flex-direction:column;gap:11px;position:relative}
+.tcard .cvwrap{position:relative;border-radius:9px;padding:5px;background:var(--paper-1);border:1px solid var(--hair);box-shadow:0 1px 2px rgba(35,37,31,.03);transition:.15s}
+.tcard:hover .cvwrap{box-shadow:var(--shadow-card)}
+.tcard.sel .cvwrap{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine)}
+.tcard .check{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--pine);display:none;place-items:center;z-index:3;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.tcard.sel .check{display:grid}
+.tcard .check svg{width:13px;height:13px}
+.ribbon{position:absolute;top:10px;left:10px;z-index:3;font-size:11px;font-weight:600;color:#fff;background:var(--pine);border-radius:6px;padding:3px 9px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(44,94,72,.3)}
+.ribbon svg{width:11px;height:11px}
+.tmeta{display:flex;align-items:baseline;gap:9px;padding:0 3px}
+.tmeta .nm{font-size:14.5px;font-weight:600;flex:none}
+.tmeta .tg{font-size:11.5px;color:var(--ink-3);font-family:var(--font-num);letter-spacing:.02em;white-space:nowrap}
+
+/* ===== 方向 B:网格 + 实时预览 ===== */
+.body-b{flex:1;display:grid;grid-template-columns:430px 1fr;min-height:0}
+.bgrid-pane{border-right:1px solid var(--hair);background:var(--paper-1);display:flex;flex-direction:column;min-height:0}
+.bgp-head{padding:15px 20px 12px;border-bottom:1px solid var(--hair-soft);font-size:13px;font-weight:600}
+.bgp-head span{font-weight:400;color:var(--ink-3);font-family:var(--font-num);margin-left:6px}
+.bgrid{flex:1;overflow:hidden;padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start}
+.bcard{cursor:pointer;position:relative;border-radius:9px;padding:4px;background:var(--paper-1);border:1px solid var(--hair)}
+.bcard.sel{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine)}
+.bcard .nm{font-size:12px;font-weight:600;padding:6px 4px 3px;display:flex;align-items:center;gap:6px}
+.bcard .nm .rdot{width:5px;height:5px;border-radius:50%;background:var(--pine)}
+.bcard .check{position:absolute;top:9px;right:9px;width:19px;height:19px;border-radius:50%;background:var(--pine);display:none;place-items:center;z-index:3}
+.bcard.sel .check{display:grid}.bcard .check svg{width:11px;height:11px}
+
+.preview{background:radial-gradient(120% 130% at 50% 0%, #F4F1E7 0%, #ECE7D9 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:34px 44px;position:relative;overflow:hidden}
+.pv-cap{position:absolute;top:22px;left:50%;transform:translateX(-50%);font-family:var(--font-num);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-4)}
+.bigcover{width:660px;background:#fff;border-radius:5px;box-shadow:var(--shadow-slide);padding:54px 60px;aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:center}
+.bigcover .rk{font-family:var(--font-num);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--pine);font-weight:600}
+.bigcover h4{font-size:48px;font-weight:700;letter-spacing:-.01em;margin-top:16px;line-height:1.1}
+.bigcover .rsub{font-size:16px;color:var(--ink-2);margin-top:16px}
+.bigcover .rrule{width:64px;height:3px;background:var(--pine);margin-top:24px;border-radius:2px}
+.pv-foot{display:flex;align-items:center;gap:16px;width:660px}
+.pv-foot .info .nm{font-size:17px;font-weight:600}
+.pv-foot .info .ds{font-size:12.5px;color:var(--ink-3);margin-top:3px}
+.pv-foot .mini2{display:flex;gap:10px;margin-left:auto}
+.pv-foot .mini2 .cv{width:104px}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="brandline">
+    <div class="glyph"></div>
+    <h1><b>Jumpx Slides</b> · 选模板</h1>
+    <span class="sub">关键岔路口 · 2 个方向</span>
+  </div>
+  <div class="note">
+    <div class="cell">
+      <div class="k">这一屏的角色</div>
+      <p>第二个"关键岔路口":7 套风格彼此明显不同(配色 + 版式 + 性格)。副驾基于你的内容(清单 + 图表)推荐「素白」并已预选——带角标说明理由,用户点一下即可换。确认后进入渲染。</p>
+    </div>
+    <div class="cell">
+      <div class="k">方向 A — 纯网格</div>
+      <p>7 套铺成 4×2 网格,一屏扫完。推荐项带角标 + 预选高亮,所选打勾。浏览优先、决策最快。</p>
+    </div>
+    <div class="cell">
+      <div class="k">方向 B — 套封面预览</div>
+      <p>左侧紧凑网格,右侧把所选模板实时套到你真实的封面「重新认识睡眠」,再附两张正文缩览。所见即所得,换肤更有底气。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 方向 A:纯网格 ============ -->
+<div class="option">
+  <div class="opt-label"><span class="opt-tag">方向 A</span><h2>纯网格</h2><span class="d">4×2 一屏扫完 · 决策最快</span></div>
+  <div class="app">
+    <div class="topbar">
+      <div class="tb-brand"><div class="tb-glyph"></div><span class="tb-name">Jumpx</span></div>
+      <div class="tb-divline"></div>
+      <div class="proj"><span class="t">重新认识睡眠</span><span class="chap"> · 第三章作业</span></div>
+      <div class="steps">
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">输入</span></div>
+        <span class="bar fill"></span>
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">大纲</span></div>
+        <span class="bar fill"></span>
+        <div class="step cur"><span class="num">3</span><span class="lb">选模板</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">4</span><span class="lb">渲染</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">5</span><span class="lb">完成</span></div>
+      </div>
+      <div class="tb-right">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回大纲</button>
+        <button class="btn primary">用「素白」· 开始渲染<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="gridwrap">
+      <div class="agentbar">
+        <div class="ai"><i></i></div>
+        <div class="msg">你的内容偏 <b>清单 + 图表</b>,我先选了「<b>素白</b>」——干净、好读、最通用。想要别的风格直接点。</div>
+        <div class="count">7 套模板</div>
+      </div>
+      <div class="grid" id="gridA"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 方向 B:网格 + 实时预览 ============ -->
+<div class="option">
+  <div class="opt-label"><span class="opt-tag">方向 B</span><h2>套封面预览</h2><span class="d">把所选模板实时套到你的封面 · 所见即所得</span></div>
+  <div class="app">
+    <div class="topbar">
+      <div class="tb-brand"><div class="tb-glyph"></div><span class="tb-name">Jumpx</span></div>
+      <div class="tb-divline"></div>
+      <div class="proj"><span class="t">重新认识睡眠</span><span class="chap"> · 第三章作业</span></div>
+      <div class="steps">
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">输入</span></div>
+        <span class="bar fill"></span>
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">大纲</span></div>
+        <span class="bar fill"></span>
+        <div class="step cur"><span class="num">3</span><span class="lb">选模板</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">4</span><span class="lb">渲染</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">5</span><span class="lb">完成</span></div>
+      </div>
+      <div class="tb-right">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回大纲</button>
+        <button class="btn primary">用「素白」· 开始渲染<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="body-b">
+      <div class="bgrid-pane">
+        <div class="bgp-head">选一套风格<span>· 7 套</span></div>
+        <div class="bgrid" id="gridB"></div>
+      </div>
+      <div class="preview">
+        <span class="pv-cap">预览 · 素白 套用到你的封面</span>
+        <div class="bigcover">
+          <div class="rk">训练营 · 第三章作业</div>
+          <h4>重新认识睡眠</h4>
+          <div class="rsub">给训练营同学的 10 分钟分享 · 林同学</div>
+          <div class="rrule"></div>
+        </div>
+        <div class="pv-foot">
+          <div class="info">
+            <div class="nm">素白 <span style="font-size:12px;color:var(--pine);font-weight:500">· 副驾推荐</span></div>
+            <div class="ds">极简留白,黑字 + 一点墨绿。适合清单与图表,最通用、最好读。</div>
+          </div>
+          <div class="mini2">
+            <div class="cv t-plain" style="transform:none"><span class="kick"></span><span class="tt1"></span><span class="tt2"></span><span class="rule"></span><span class="dot"></span></div>
+            <div class="cv t-data"><span class="kick"></span><span class="tt2"></span><span class="base"></span><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span><span class="bar b4"></span><span class="bar b5"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const tpls=[
+  {id:'plain',name:'素白',tag:'极简 · 通用',rec:true},
+  {id:'pine', name:'学术绿',tag:'沉稳 · 学术'},
+  {id:'kraft',name:'牛皮纸',tag:'温暖 · 手作'},
+  {id:'dark', name:'夜读',tag:'深色 · 聚焦'},
+  {id:'mag',  name:'杂志',tag:'大胆 · 编辑'},
+  {id:'data', name:'图表报告',tag:'结构 · 数据'},
+  {id:'round',name:'圆润',tag:'友好 · 轻松'},
+];
+const inner={
+  plain:'<span class="kick"></span><span class="tt1"></span><span class="tt2"></span><span class="rule"></span><span class="dot"></span>',
+  pine:'<span class="band"></span><span class="kick"></span><span class="tt1"></span><span class="tt2"></span><span class="l1"></span><span class="l2"></span>',
+  kraft:'<span class="stamp"></span><span class="kick"></span><span class="tt1"></span><span class="tt2"></span><span class="rule"></span>',
+  dark:'<span class="kick"></span><span class="tt1"></span><span class="tt2"></span><span class="rule"></span><span class="dot"></span>',
+  mag:'<span class="blk"></span><span class="blk2"></span><span class="kick"></span><span class="tt1"></span><span class="tt2"></span>',
+  data:'<span class="kick"></span><span class="tt2"></span><span class="base"></span><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span><span class="bar b4"></span><span class="bar b5"></span>',
+  round:'<span class="kick"></span><span class="circ"></span><span class="circ2"></span><span class="pill"></span><span class="pill2"></span>',
+};
+const checkSvg='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>';
+const starSvg='<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.6 6.3L21 9l-5 4.3L17.5 21 12 17.3 6.5 21 8 13.3 3 9l6.4-.7z"/></svg>';
+
+// 方向 A
+document.getElementById('gridA').innerHTML = tpls.map(t=>`
+  <div class="tcard${t.rec?' sel':''}">
+    <div class="cvwrap">
+      ${t.rec?`<span class="ribbon">${starSvg}副驾推荐</span>`:''}
+      <span class="check">${checkSvg}</span>
+      <div class="cv t-${t.id}">${inner[t.id]}</div>
+    </div>
+    <div class="tmeta"><span class="nm">${t.name}</span><span class="tg">${t.tag}</span></div>
+  </div>`).join('');
+
+// 方向 B
+document.getElementById('gridB').innerHTML = tpls.map(t=>`
+  <div class="bcard${t.rec?' sel':''}">
+    <span class="check">${checkSvg}</span>
+    <div class="cv t-${t.id}">${inner[t.id]}</div>
+    <div class="nm">${t.rec?'<span class="rdot"></span>':''}${t.name}</div>
+  </div>`).join('');
+</script>
+</body>
+</html>

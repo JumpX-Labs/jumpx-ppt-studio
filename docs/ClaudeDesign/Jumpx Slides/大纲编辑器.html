@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jumpx Slides · 大纲编辑器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper-0:#FAF8F2;--paper-1:#FFFFFF;--paper-2:#F1EEE4;--paper-3:#E9E5D8;
+  --hair:#E4DFD0;--hair-soft:#EDE9DD;
+  --ink:#23251F;--ink-2:#5E5F54;--ink-3:#94927F;--ink-4:#B6B3A1;
+  --pine:#2C5E48;--pine-deep:#1E4636;--pine-soft:#E7EFE8;--pine-line:#CFE0D3;
+  --amber:#B07A2E;--amber-soft:#F4ECDD;
+  --radius:14px;
+  --shadow-card:0 1px 2px rgba(35,37,31,.04), 0 18px 48px -22px rgba(35,37,31,.28);
+  --font-cn:"Noto Sans SC", system-ui, sans-serif;
+  --font-num:"Space Grotesk", var(--font-cn);
+  --font-mono:"Space Mono", ui-monospace, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#DCD9CF;color:var(--ink);font-family:var(--font-cn);-webkit-font-smoothing:antialiased}
+body{padding:48px 40px 96px}
+
+.page-head{max-width:1440px;margin:0 auto 30px}
+.brandline{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.glyph{width:30px;height:30px;border-radius:8px;background:var(--pine);position:relative;flex:none}
+.glyph::before{content:"";position:absolute;inset:7px 7px auto 7px;height:4px;border-radius:2px;background:#fff;opacity:.92}
+.glyph::after{content:"";position:absolute;inset:14px 7px 7px 7px;border-radius:2px;background:#fff;opacity:.42}
+.page-head h1{font-size:20px;font-weight:500}
+.page-head h1 b{font-family:var(--font-num);font-weight:600}
+.page-head .sub{color:var(--ink-3);font-size:13px;margin-left:auto;font-family:var(--font-num)}
+.note{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:1px;background:var(--hair);border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden}
+.note .cell{background:var(--paper-0);padding:18px 20px}
+.note .k{font-family:var(--font-num);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin-bottom:9px;font-weight:600}
+.note p{font-size:12.5px;line-height:1.7;color:var(--ink-2)}
+
+.option{max-width:1440px;margin:0 auto}
+.opt-label{display:flex;align-items:baseline;gap:14px;margin:44px 0 16px}
+.opt-tag{font-family:var(--font-num);font-size:12px;font-weight:600;letter-spacing:.1em;color:#fff;background:var(--ink);padding:4px 10px;border-radius:6px}
+.opt-label h2{font-size:17px;font-weight:600}
+.opt-label .d{font-size:13px;color:var(--ink-3)}
+
+.app{width:1440px;height:880px;background:var(--paper-0);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow-card);overflow:hidden;display:flex;flex-direction:column}
+
+/* —— 顶栏 —— */
+.topbar{height:60px;flex:none;display:flex;align-items:center;gap:18px;padding:0 20px;border-bottom:1px solid var(--hair);background:var(--paper-1)}
+.tb-brand{display:flex;align-items:center;gap:9px}
+.tb-glyph{width:24px;height:24px;border-radius:6px;background:var(--pine);position:relative}
+.tb-glyph::before{content:"";position:absolute;inset:6px 6px auto 6px;height:3px;border-radius:2px;background:#fff;opacity:.92}
+.tb-glyph::after{content:"";position:absolute;inset:11px 6px 6px 6px;border-radius:2px;background:#fff;opacity:.42}
+.tb-name{font-family:var(--font-num);font-weight:600;font-size:14px}
+.tb-divline{width:1px;height:22px;background:var(--hair)}
+.proj .t{font-size:13.5px;font-weight:500}
+.proj .chap{font-size:13.5px;color:var(--ink-3)}
+.steps{display:flex;align-items:center;margin:0 auto}
+.step{display:flex;align-items:center;gap:9px;padding:0 4px}
+.step .num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-num);font-size:11px;font-weight:600;border:1.5px solid var(--hair);color:var(--ink-4);background:var(--paper-1)}
+.step .lb{font-size:12.5px;color:var(--ink-3)}
+.step.done .num{background:var(--pine);border-color:var(--pine);color:#fff}
+.step.done .lb{color:var(--ink-2)}
+.step.cur .num{border-color:var(--pine);color:var(--pine);background:var(--pine-soft);box-shadow:0 0 0 3px rgba(44,94,72,.1)}
+.step.cur .lb{color:var(--pine);font-weight:600}
+.step .bar{width:34px;height:1.5px;background:var(--hair);margin:0 6px}
+.step .bar.fill{background:var(--pine)}
+.tb-right{display:flex;align-items:center;gap:12px;margin-left:auto}
+.btn{font-family:var(--font-cn);font-size:13px;border-radius:9px;padding:9px 15px;border:1px solid var(--hair);background:var(--paper-1);color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:7px}
+.btn svg{width:15px;height:15px;color:var(--ink-3)}
+.btn.primary{background:var(--pine);border-color:var(--pine);color:#fff;font-weight:500}
+.btn.primary svg{color:#fff}
+
+/* ===== body 两栏 ===== */
+.body{flex:1;display:grid;grid-template-columns:312px 1fr;min-height:0}
+
+/* —— 左:大纲树 —— */
+.tree{background:var(--paper-1);border-right:1px solid var(--hair);display:flex;flex-direction:column;min-height:0}
+.agentline{display:flex;gap:11px;padding:16px 16px 14px;border-bottom:1px solid var(--hair-soft);align-items:flex-start}
+.agentline .ai{width:26px;height:26px;border-radius:8px;background:var(--pine-soft);border:1px solid var(--pine-line);display:grid;place-items:center;flex:none}
+.agentline .ai i{width:8px;height:8px;border-radius:50%;background:var(--pine)}
+.agentline .msg{font-size:12.5px;line-height:1.55;color:var(--ink-2)}
+.agentline .msg b{color:var(--ink);font-weight:600}
+.tree-body{flex:1;overflow:hidden;padding:10px 10px 4px}
+.chap{margin-top:10px}
+.chap:first-child{margin-top:2px}
+.chap-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:default}
+.chap-row .cv{width:13px;height:13px;color:var(--ink-3);flex:none}
+.chap-row .ct{font-size:11px;font-family:var(--font-num);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.chap-row .cn{margin-left:auto;font-family:var(--font-num);font-size:10.5px;color:var(--ink-4);background:var(--paper-2);border-radius:20px;padding:1px 8px}
+.prow{display:flex;align-items:center;gap:10px;padding:8px 9px 8px 12px;border-radius:9px;cursor:pointer;position:relative;margin:1px 0}
+.prow .pn{font-family:var(--font-num);font-size:11px;font-weight:600;color:var(--ink-4);width:18px;flex:none;text-align:right}
+.prow .pt{font-size:13px;color:var(--ink);line-height:1.35;flex:1;min-width:0}
+.prow .grip{width:13px;color:var(--ink-4);opacity:0;flex:none}
+.prow:hover{background:var(--paper-2)}
+.prow:hover .grip{opacity:1}
+.prow.sel{background:var(--pine-soft)}
+.prow.sel::before{content:"";position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:2px;background:var(--pine)}
+.prow.sel .pt{font-weight:600;color:var(--pine-deep)}
+.prow.sel .pn{color:var(--pine)}
+.prow.cover .pt{font-weight:600}
+.sugg{display:flex;align-items:center;gap:10px;padding:8px 9px 8px 12px;margin:3px 0;border:1px dashed var(--amber);background:var(--amber-soft);border-radius:9px}
+.sugg .pn{font-family:var(--font-num);font-size:11px;color:var(--amber);width:18px;text-align:right;flex:none}
+.sugg .pt{font-size:12.5px;color:#7a5417;flex:1}
+.sugg .pt b{font-size:10px;font-family:var(--font-num);letter-spacing:.08em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1px;font-weight:700}
+.sugg .act{display:flex;gap:5px}
+.sugg .act button{width:24px;height:24px;border-radius:7px;border:1px solid rgba(176,122,46,.3);background:var(--paper-1);display:grid;place-items:center;cursor:pointer;color:var(--amber)}
+.sugg .act button.ok{background:var(--pine);border-color:var(--pine);color:#fff}
+.sugg .act svg{width:13px;height:13px}
+.addpage{display:flex;align-items:center;gap:8px;padding:7px 9px 7px 12px;color:var(--ink-3);font-size:12.5px;cursor:pointer;border-radius:8px}
+.addpage:hover{background:var(--paper-2);color:var(--ink-2)}
+.addpage svg{width:14px;height:14px}
+.tree-foot{border-top:1px solid var(--hair-soft);padding:12px 16px;display:flex;align-items:center;gap:10px}
+.tree-foot .meta{font-family:var(--font-num);font-size:11.5px;color:var(--ink-3)}
+.tree-foot .regen{margin-left:auto;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:6px;cursor:pointer}
+.tree-foot .regen svg{width:14px;height:14px;color:var(--ink-3)}
+
+/* —— 右:精编(A) —— */
+.editor{background:var(--paper-2);overflow:hidden;padding:40px 56px;display:flex;flex-direction:column}
+.ed-inner{background:var(--paper-1);border:1px solid var(--hair);border-radius:14px;flex:1;padding:42px 48px;box-shadow:0 1px 2px rgba(35,37,31,.03);overflow:hidden;display:flex;flex-direction:column}
+.crumbs{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink-3)}
+.crumbs .pgbadge{font-family:var(--font-num);font-weight:600;color:var(--pine);background:var(--pine-soft);border-radius:6px;padding:2px 8px;font-size:12px}
+.crumbs .ai-tag{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--pine)}
+.crumbs .ai-tag i{width:6px;height:6px;border-radius:50%;background:var(--pine)}
+.ed-title{font-size:32px;font-weight:700;letter-spacing:-.01em;margin-top:16px;outline:none;border-bottom:2px solid transparent;padding-bottom:4px}
+.ed-title:focus{border-color:var(--pine-line)}
+.seclab{font-family:var(--font-num);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:30px 0 12px}
+.points{display:flex;flex-direction:column;gap:10px}
+.point{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--hair);border-radius:11px;background:var(--paper-0)}
+.point .grip{width:14px;color:var(--ink-4);margin-top:3px;flex:none;cursor:grab}
+.point .b{width:8px;height:8px;border-radius:2px;background:var(--pine);transform:rotate(45deg);margin-top:6px;flex:none}
+.point .ptext{flex:1}
+.point .ptext .h{font-size:15px;font-weight:600;outline:none}
+.point .ptext .s{font-size:13px;color:var(--ink-2);margin-top:4px;line-height:1.55;outline:none}
+.point .x{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;color:var(--ink-4);opacity:0;cursor:pointer;flex:none}
+.point:hover .x{opacity:1}
+.point .x svg{width:14px;height:14px}
+.add-point{display:flex;align-items:center;gap:8px;color:var(--ink-3);font-size:13px;padding:10px 14px;cursor:pointer}
+.add-point svg{width:15px;height:15px}
+.fig-notes{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+.fcard{border:1px solid var(--hair);border-radius:11px;padding:14px;background:var(--paper-0)}
+.fcard .fh{font-family:var(--font-num);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.figph2{height:96px;border:1px dashed var(--pine-line);border-radius:8px;background:repeating-linear-gradient(135deg,var(--pine-soft) 0 10px,transparent 10px 20px);display:grid;place-items:center;margin-bottom:9px}
+.figph2 span{font-family:var(--font-mono);font-size:10.5px;color:var(--pine);background:var(--paper-1);padding:3px 9px;border-radius:20px;border:1px solid var(--pine-line)}
+.fcard .frow{display:flex;gap:8px}
+.fcard .frow .mini-b{font-size:11.5px;color:var(--ink-2);border:1px solid var(--hair);border-radius:7px;padding:5px 10px;cursor:pointer;background:var(--paper-1)}
+.fcard .note-txt{font-size:13px;color:var(--ink-2);line-height:1.6;outline:none}
+
+/* —— 右:故事板通览(B) —— */
+.board{background:var(--paper-2);overflow:hidden;padding:26px 30px;display:flex;flex-direction:column}
+.board-scroll{flex:1;overflow:hidden}
+.chap-div{display:flex;align-items:center;gap:12px;margin:18px 2px 12px}
+.chap-div:first-child{margin-top:2px}
+.chap-div .ct{font-family:var(--font-num);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.chap-div .ln{flex:1;height:1px;background:var(--hair)}
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.bcard{background:var(--paper-1);border:1px solid var(--hair);border-radius:11px;padding:14px 15px;min-height:120px;display:flex;flex-direction:column;gap:8px;cursor:pointer;position:relative}
+.bcard .bn{font-family:var(--font-num);font-size:11px;font-weight:600;color:var(--ink-4)}
+.bcard .bt{font-size:14px;font-weight:600;line-height:1.35}
+.bcard .bl{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.bcard .bl i{font-size:11.5px;color:var(--ink-3);line-height:1.4;display:flex;gap:6px}
+.bcard .bl i::before{content:"";width:4px;height:4px;border-radius:1px;background:var(--ink-4);transform:rotate(45deg);margin-top:6px;flex:none}
+.bcard.sel{border-color:var(--pine);box-shadow:0 0 0 2px rgba(44,94,72,.16)}
+.bcard.sel .bn{color:var(--pine)}
+.bcard.cover{background:linear-gradient(150deg,#27543f,#1c4233);border-color:transparent}
+.bcard.cover .bn{color:rgba(255,255,255,.6)}
+.bcard.cover .bt{color:#fff;font-size:16px}
+.bcard.cover .sm{font-size:11.5px;color:rgba(255,255,255,.7);margin-top:auto}
+.bcard.add{border-style:dashed;align-items:center;justify-content:center;color:var(--ink-3);gap:6px}
+.bcard.add svg{width:18px;height:18px}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="brandline">
+    <div class="glyph"></div>
+    <h1><b>Jumpx Slides</b> · 大纲编辑器</h1>
+    <span class="sub">关键岔路口 · 2 个方向</span>
+  </div>
+  <div class="note">
+    <div class="cell">
+      <div class="k">这一屏的角色</div>
+      <p>第一个"关键岔路口":副驾已起草大纲,停下来请你拍板。左侧是可拖拽增删的大纲树(章 → 页),副驾还会在合适处建议加页(可一键采纳/忽略)。确认后才进入选模板。</p>
+    </div>
+    <div class="cell">
+      <div class="k">方向 A — 精编</div>
+      <p>左树 + 右"单页深编":选中一页,右侧大尺度编辑标题、要点、配图建议与讲者备注。适合逐页打磨内容。</p>
+    </div>
+    <div class="cell">
+      <div class="k">方向 B — 通览</div>
+      <p>左树 + 右"故事板":全部页面以小卡平铺成网格,一眼看清叙事流与节奏,适合先理顺整体结构再细修。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 方向 A:精编 ============ -->
+<div class="option">
+  <div class="opt-label"><span class="opt-tag">方向 A</span><h2>精编</h2><span class="d">左树 + 右单页深编 · 逐页打磨</span></div>
+  <div class="app">
+    <div class="topbar">
+      <div class="tb-brand"><div class="tb-glyph"></div><span class="tb-name">Jumpx</span></div>
+      <div class="tb-divline"></div>
+      <div class="proj"><span class="t">重新认识睡眠</span><span class="chap"> · 第三章作业</span></div>
+      <div class="steps">
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">输入</span></div>
+        <span class="bar fill"></span>
+        <div class="step cur"><span class="num">2</span><span class="lb">大纲</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">3</span><span class="lb">选模板</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">4</span><span class="lb">渲染</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">5</span><span class="lb">完成</span></div>
+      </div>
+      <div class="tb-right">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.4 2.6L3 8"/><path d="M3 4v4h4"/></svg>重拟大纲</button>
+        <button class="btn primary">确认大纲 · 选模板<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="body">
+      <!-- 左树 -->
+      <div class="tree">
+        <div class="agentline">
+          <div class="ai"><i></i></div>
+          <div class="msg">我把它拆成了 <b>4 章 12 页</b>,顺序和重点先这样——有要调的直接改,几个关键选择我会停下来问你。</div>
+        </div>
+        <div class="tree-body" id="treeA"></div>
+        <div class="tree-foot">
+          <span class="meta">12 页 · 4 章 · 约 10 分钟</span>
+          <span class="regen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>调节奏</span>
+        </div>
+      </div>
+
+      <!-- 右:精编 -->
+      <div class="editor">
+        <div class="ed-inner">
+          <div class="crumbs">
+            <span class="pgbadge">04</span>
+            <span>第二章 · 核心发现</span>
+            <span class="ai-tag"><i></i>副驾起草</span>
+          </div>
+          <div class="ed-title" contenteditable="true">三个被低估的睡眠杠杆</div>
+
+          <div class="seclab">要点</div>
+          <div class="points">
+            <div class="point"><svg class="grip" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="15" cy="18" r="1.4"/></svg><span class="b"></span><div class="ptext"><div class="h" contenteditable="true">固定起床时间</div><div class="s" contenteditable="true">比入睡时间更能稳定生物钟,周末也尽量一致。</div></div><div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></div></div>
+            <div class="point"><svg class="grip" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="15" cy="18" r="1.4"/></svg><span class="b"></span><div class="ptext"><div class="h" contenteditable="true">午后断咖啡因</div><div class="s" contenteditable="true">半衰期约 6 小时,下午两点后尽量不再摄入。</div></div><div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></div></div>
+            <div class="point"><svg class="grip" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="15" cy="18" r="1.4"/></svg><span class="b"></span><div class="ptext"><div class="h" contenteditable="true">睡前降核心体温</div><div class="s" contenteditable="true">温水澡后体温回落,会自然带来困意。</div></div><div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></div></div>
+          </div>
+          <div class="add-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>添加要点</div>
+
+          <div class="fig-notes">
+            <div class="fcard">
+              <div class="fh">配图建议</div>
+              <div class="figph2"><span>深睡占比曲线图</span></div>
+              <div class="frow"><span class="mini-b">换一个建议</span><span class="mini-b">上传图片</span></div>
+            </div>
+            <div class="fcard">
+              <div class="fh">讲者备注 · 草稿</div>
+              <div class="note-txt" contenteditable="true">这三件事不靠意志力,靠"环境与时间设计"。现场可以先问一句:你们几点起床?引出固定起床时间的重要性。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 方向 B:通览 ============ -->
+<div class="option">
+  <div class="opt-label"><span class="opt-tag">方向 B</span><h2>通览</h2><span class="d">左树 + 右故事板网格 · 先理顺叙事流</span></div>
+  <div class="app">
+    <div class="topbar">
+      <div class="tb-brand"><div class="tb-glyph"></div><span class="tb-name">Jumpx</span></div>
+      <div class="tb-divline"></div>
+      <div class="proj"><span class="t">重新认识睡眠</span><span class="chap"> · 第三章作业</span></div>
+      <div class="steps">
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">输入</span></div>
+        <span class="bar fill"></span>
+        <div class="step cur"><span class="num">2</span><span class="lb">大纲</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">3</span><span class="lb">选模板</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">4</span><span class="lb">渲染</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">5</span><span class="lb">完成</span></div>
+      </div>
+      <div class="tb-right">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.4 2.6L3 8"/><path d="M3 4v4h4"/></svg>重拟大纲</button>
+        <button class="btn primary">确认大纲 · 选模板<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="body">
+      <!-- 左树(同) -->
+      <div class="tree">
+        <div class="agentline">
+          <div class="ai"><i></i></div>
+          <div class="msg">我把它拆成了 <b>4 章 12 页</b>,右侧能一眼看清整条叙事流——拖动卡片可调顺序。</div>
+        </div>
+        <div class="tree-body" id="treeB"></div>
+        <div class="tree-foot">
+          <span class="meta">12 页 · 4 章 · 约 10 分钟</span>
+          <span class="regen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>调节奏</span>
+        </div>
+      </div>
+
+      <!-- 右:故事板 -->
+      <div class="board">
+        <div class="board-scroll">
+          <div class="bgrid">
+            <div class="bcard cover"><div class="bn">01 · 封面</div><div class="bt">重新认识睡眠</div><div class="sm">给训练营同学的 10 分钟分享</div></div>
+          </div>
+
+          <div class="chap-div"><span class="ct">第一章 · 我们为何睡不好</span><span class="ln"></span></div>
+          <div class="bgrid">
+            <div class="bcard"><div class="bn">02</div><div class="bt">你昨晚睡够了吗</div><div class="bl"><i>一个扎心的开场提问</i><i>现场举手小调查</i></div></div>
+            <div class="bcard"><div class="bn">03</div><div class="bt">三个常见误区</div><div class="bl"><i>补觉能还清睡眠债?</i><i>喝酒助眠?</i></div></div>
+          </div>
+
+          <div class="chap-div"><span class="ct">第二章 · 核心发现</span><span class="ln"></span></div>
+          <div class="bgrid">
+            <div class="bcard sel"><div class="bn">04</div><div class="bt">三个被低估的睡眠杠杆</div><div class="bl"><i>固定起床时间</i><i>午后断咖啡因</i><i>睡前降核心体温</i></div></div>
+            <div class="bcard"><div class="bn">05</div><div class="bt">固定起床时间</div><div class="bl"><i>稳定生物钟的锚点</i></div></div>
+            <div class="bcard"><div class="bn">06</div><div class="bt">咖啡因与核心体温</div><div class="bl"><i>半衰期与体温曲线</i></div></div>
+          </div>
+
+          <div class="chap-div"><span class="ct">第三章 · 怎么做</span><span class="ln"></span></div>
+          <div class="bgrid">
+            <div class="bcard"><div class="bn">07</div><div class="bt">一周睡眠计划</div><div class="bl"><i>可打印的执行表</i></div></div>
+            <div class="bcard"><div class="bn">08</div><div class="bt">卧室环境清单</div><div class="bl"><i>光 · 温度 · 噪音</i></div></div>
+            <div class="bcard"><div class="bn">09</div><div class="bt">趁手的工具与 App</div><div class="bl"><i>3 个低成本选择</i></div></div>
+          </div>
+
+          <div class="chap-div"><span class="ct">第四章 · 收尾</span><span class="ln"></span></div>
+          <div class="bgrid">
+            <div class="bcard"><div class="bn">10</div><div class="bt">关键回顾</div><div class="bl"><i>一页记住三件事</i></div></div>
+            <div class="bcard"><div class="bn">11</div><div class="bt">行动清单</div><div class="bl"><i>今晚就能做的一步</i></div></div>
+            <div class="bcard"><div class="bn">12</div><div class="bt">谢谢 · 问答</div><div class="bl"><i>留联系方式</i></div></div>
+            <div class="bcard add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>添加一页</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// —— 渲染左侧大纲树(A、B 共用) ——
+const outline = [
+  {cover:true, n:'01', t:'封面 · 重新认识睡眠'},
+  {chap:'第一章 · 我们为何睡不好', pages:[
+    {n:'02', t:'你昨晚睡够了吗'},
+    {n:'03', t:'三个常见误区'},
+  ]},
+  {chap:'第二章 · 核心发现', pages:[
+    {n:'04', t:'三个被低估的睡眠杠杆', sel:true},
+    {n:'05', t:'固定起床时间'},
+    {n:'06', t:'咖啡因与核心体温'},
+  ]},
+  {chap:'第三章 · 怎么做', pages:[
+    {n:'07', t:'一周睡眠计划'},
+    {n:'08', t:'卧室环境清单'},
+    {n:'09', t:'趁手的工具与 App'},
+    {sugg:true, t:'常见问题答疑'},
+  ]},
+  {chap:'第四章 · 收尾', pages:[
+    {n:'10', t:'关键回顾'},
+    {n:'11', t:'行动清单'},
+    {n:'12', t:'谢谢 · 问答'},
+  ]},
+];
+const grip = '<svg class="grip" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="15" cy="18" r="1.4"/></svg>';
+function renderTree(el){
+  let h='';
+  outline.forEach(node=>{
+    if(node.cover){
+      h+='<div class="prow cover"><span class="pn">'+node.n+'</span><span class="pt">'+node.t+'</span>'+grip+'</div>';
+    }else{
+      h+='<div class="chap"><div class="chap-row"><svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg><span class="ct">'+node.chap+'</span><span class="cn">'+node.pages.filter(p=>!p.sugg).length+' 页</span></div>';
+      node.pages.forEach(p=>{
+        if(p.sugg){
+          h+='<div class="sugg"><span class="pn">＋</span><span class="pt"><b>副驾建议</b>'+p.t+'</span><span class="act"><button class="ok" title="采纳"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></button><button title="忽略"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg></button></span></div>';
+        }else{
+          h+='<div class="prow'+(p.sel?' sel':'')+'"><span class="pn">'+p.n+'</span><span class="pt">'+p.t+'</span>'+grip+'</div>';
+        }
+      });
+      h+='</div>';
+    }
+  });
+  el.innerHTML=h;
+}
+renderTree(document.getElementById('treeA'));
+renderTree(document.getElementById('treeB'));
+</script>
+</body>
+</html>

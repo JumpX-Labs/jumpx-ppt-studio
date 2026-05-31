@@ -1,0 +1,33 @@
+# 密钥 / 环境
+.env
+.env.local
+**/.env
+**/.env.local
+!**/.env.example
+
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+.langgraph_api/
+
+# agent 工作区：复制进来的 skill + 各任务运行产物（可由 setup_workspace.py 重建）
+backend/workspace/
+
+# Node / UI
+ui/node_modules/
+ui/.next/
+node_modules/
+
+# vendor 参考仓库（只读，不纳入版本控制）
+vendor/
+
+# Cloudflare 部署构建产物（可由 esbuild 重建）
+demo-dist/
+.wrangler/
+
+# 系统
+.DS_Store
+
+# vendored 的 deep-agents-ui clone（自带 .git，可重新 clone）
+ui/

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jumpx Slides · 选输出形态</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper-0:#FAF8F2;--paper-1:#FFFFFF;--paper-2:#F1EEE4;--paper-3:#E9E5D8;
+  --hair:#E4DFD0;--hair-soft:#EDE9DD;
+  --ink:#23251F;--ink-2:#5E5F54;--ink-3:#94927F;--ink-4:#B6B3A1;
+  --pine:#2C5E48;--pine-deep:#1E4636;--pine-soft:#E7EFE8;--pine-line:#CFE0D3;
+  --amber:#B07A2E;--amber-soft:#F4ECDD;
+  --radius:14px;
+  --shadow-card:0 1px 2px rgba(35,37,31,.04), 0 18px 48px -22px rgba(35,37,31,.28);
+  --shadow-slide:0 2px 6px rgba(35,37,31,.06), 0 30px 60px -28px rgba(35,37,31,.34);
+  --font-cn:"Noto Sans SC", system-ui, sans-serif;
+  --font-num:"Space Grotesk", var(--font-cn);
+  --font-mono:"Space Mono", ui-monospace, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#DCD9CF;color:var(--ink);font-family:var(--font-cn);-webkit-font-smoothing:antialiased}
+body{padding:48px 40px 96px}
+
+.page-head{max-width:1440px;margin:0 auto 30px}
+.brandline{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.glyph{width:30px;height:30px;border-radius:8px;background:var(--pine);position:relative;flex:none}
+.glyph::before{content:"";position:absolute;inset:7px 7px auto 7px;height:4px;border-radius:2px;background:#fff;opacity:.92}
+.glyph::after{content:"";position:absolute;inset:14px 7px 7px 7px;border-radius:2px;background:#fff;opacity:.42}
+.page-head h1{font-size:20px;font-weight:500}
+.page-head h1 b{font-family:var(--font-num);font-weight:600}
+.page-head .sub{color:var(--ink-3);font-size:13px;margin-left:auto;font-family:var(--font-num)}
+.note{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:1px;background:var(--hair);border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden}
+.note .cell{background:var(--paper-0);padding:18px 20px}
+.note .k{font-family:var(--font-num);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin-bottom:9px;font-weight:600}
+.note p{font-size:12.5px;line-height:1.7;color:var(--ink-2)}
+
+.option{max-width:1440px;margin:0 auto}
+.opt-label{display:flex;align-items:baseline;gap:14px;margin:44px 0 16px}
+.opt-tag{font-family:var(--font-num);font-size:12px;font-weight:600;letter-spacing:.1em;color:#fff;background:var(--ink);padding:4px 10px;border-radius:6px}
+.opt-label h2{font-size:17px;font-weight:600}
+.opt-label .d{font-size:13px;color:var(--ink-3)}
+
+.app{width:1440px;height:880px;background:var(--paper-0);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow-card);overflow:hidden;display:flex;flex-direction:column}
+
+/* —— 顶栏 —— */
+.topbar{height:60px;flex:none;display:flex;align-items:center;gap:18px;padding:0 20px;border-bottom:1px solid var(--hair);background:var(--paper-1)}
+.tb-brand{display:flex;align-items:center;gap:9px}
+.tb-glyph{width:24px;height:24px;border-radius:6px;background:var(--pine);position:relative}
+.tb-glyph::before{content:"";position:absolute;inset:6px 6px auto 6px;height:3px;border-radius:2px;background:#fff;opacity:.92}
+.tb-glyph::after{content:"";position:absolute;inset:11px 6px 6px 6px;border-radius:2px;background:#fff;opacity:.42}
+.tb-name{font-family:var(--font-num);font-weight:600;font-size:14px}
+.tb-divline{width:1px;height:22px;background:var(--hair)}
+.proj .t{font-size:13.5px;font-weight:500}.proj .chap{font-size:13.5px;color:var(--ink-3)}
+.steps{display:flex;align-items:center;margin:0 auto}
+.step{display:flex;align-items:center;gap:9px;padding:0 4px}
+.step .num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-num);font-size:11px;font-weight:600;border:1.5px solid var(--hair);color:var(--ink-4);background:var(--paper-1)}
+.step .lb{font-size:12.5px;color:var(--ink-3)}
+.step.done .num{background:var(--pine);border-color:var(--pine);color:#fff}
+.step.done .lb{color:var(--ink-2)}
+.step.cur .num{border-color:var(--pine);color:var(--pine);background:var(--pine-soft);box-shadow:0 0 0 3px rgba(44,94,72,.1)}
+.step.cur .lb{color:var(--pine);font-weight:600}
+.step .bar{width:30px;height:1.5px;background:var(--hair);margin:0 6px}
+.step .bar.fill{background:var(--pine)}
+.tb-right{display:flex;align-items:center;gap:12px;margin-left:auto}
+.btn{font-family:var(--font-cn);font-size:13px;border-radius:9px;padding:9px 15px;border:1px solid var(--hair);background:var(--paper-1);color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:7px}
+.btn svg{width:15px;height:15px;color:var(--ink-3)}
+.btn.primary{background:var(--pine);border-color:var(--pine);color:#fff;font-weight:500}
+.btn.primary svg{color:#fff}
+
+/* —— 居中容器 —— */
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 60px;background:radial-gradient(60% 50% at 50% -5%, rgba(44,94,72,.04), transparent 70%)}
+.headrow{text-align:center;max-width:720px;margin-bottom:34px}
+.headrow .kick{font-family:var(--font-num);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--pine);font-weight:600}
+.headrow h2{font-size:34px;font-weight:700;margin-top:12px;letter-spacing:-.01em}
+.agentnote{display:inline-flex;align-items:center;gap:10px;margin-top:16px;background:var(--pine-soft);border:1px solid var(--pine-line);border-radius:30px;padding:8px 16px 8px 12px}
+.agentnote .ai{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
+.agentnote .ai i{width:7px;height:7px;border-radius:50%;background:var(--pine)}
+.agentnote span{font-size:13px;color:var(--pine-deep)}
+.agentnote span b{font-weight:600}
+
+/* ===== mini slide(cqw 自适应) ===== */
+.ms{aspect-ratio:16/9;container-type:inline-size;border-radius:6px;overflow:hidden;position:relative;border:1px solid rgba(35,37,31,.07);width:100%}
+.ms-html{background:#fff;padding:8cqw 9cqw}
+.ms-html .k{font-family:var(--font-num);font-size:2.8cqw;letter-spacing:.14em;color:var(--pine);font-weight:600;text-transform:uppercase}
+.ms-html .ti{font-size:6.4cqw;font-weight:700;margin-top:2.5cqw;line-height:1.08;color:var(--ink)}
+.ms-html .cols{display:grid;grid-template-columns:1.1fr 1fr;gap:6cqw;margin-top:6cqw}
+.ms-html ul{list-style:none;display:flex;flex-direction:column;gap:3.4cqw}
+.ms-html li{font-size:3.4cqw;color:var(--ink-2);padding-left:4.5cqw;position:relative;line-height:1}
+.ms-html li::before{content:"";position:absolute;left:0;top:.6cqw;width:2cqw;height:2cqw;background:var(--pine);transform:rotate(45deg)}
+.ms-html .chart{display:flex;align-items:flex-end;gap:2.4cqw;height:24cqw;border-bottom:1px solid var(--hair);padding-bottom:0}
+.ms-html .chart i{width:18%;background:var(--pine);border-radius:1cqw 1cqw 0 0}
+.ms-html .chart i:nth-child(2){background:#7FA690}
+.ms-html .chart i:nth-child(4){background:#7FA690}
+.ms-ai{background:#23251F}
+.ms-ai .img{position:absolute;inset:0;background:repeating-linear-gradient(135deg,#36433c 0 7cqw,#2f3c35 7cqw 14cqw);display:grid;place-items:center}
+.ms-ai .img span{font-family:var(--font-mono);font-size:2.7cqw;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.3);padding:1.6cqw 3.2cqw;border-radius:20px;white-space:nowrap}
+.ms-ai .ov{position:absolute;left:0;right:0;bottom:0;padding:9cqw 9cqw 7cqw;background:linear-gradient(transparent,rgba(18,20,16,.9) 60%)}
+.ms-ai .ov .k{font-family:var(--font-num);font-size:2.8cqw;letter-spacing:.14em;color:#cdbca0;font-weight:600;text-transform:uppercase}
+.ms-ai .ov .ti{font-size:6.4cqw;font-weight:700;color:#fff;margin-top:2cqw;line-height:1.05}
+
+/* ===== 方向 A:双卡 ===== */
+.cards{display:flex;gap:26px}
+.ocard{width:432px;background:var(--paper-1);border:1px solid var(--hair);border-radius:16px;padding:16px;cursor:pointer;position:relative;transition:.15s;box-shadow:0 1px 2px rgba(35,37,31,.03)}
+.ocard:hover{box-shadow:var(--shadow-card)}
+.ocard.sel{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine)}
+.orib{position:absolute;top:-11px;left:20px;z-index:4;font-size:11.5px;font-weight:600;color:#fff;background:var(--pine);border-radius:20px;padding:4px 12px;display:flex;align-items:center;gap:5px;box-shadow:0 4px 10px -2px rgba(44,94,72,.4)}
+.orib svg{width:11px;height:11px}
+.oradio{position:absolute;top:26px;right:26px;width:22px;height:22px;border-radius:50%;border:2px solid var(--hair);background:var(--paper-1);z-index:3}
+.ocard.sel .oradio{border-color:var(--pine);background:var(--pine);box-shadow:inset 0 0 0 3.5px #fff}
+.ocard-b{padding:16px 8px 6px}
+.oname{font-size:18px;font-weight:700;display:flex;align-items:center;gap:9px}
+.oname .badge{font-family:var(--font-num);font-size:11px;font-weight:600;border-radius:6px;padding:2px 8px}
+.oname .badge.fast{color:var(--pine-deep);background:var(--pine-soft)}
+.oname .badge.slow{color:var(--amber);background:var(--amber-soft)}
+.odesc{font-size:13px;color:var(--ink-2);line-height:1.6;margin-top:8px}
+.opros{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.opros li{font-size:13px;color:var(--ink-2);display:flex;gap:9px;align-items:flex-start;line-height:1.45}
+.opros li .ic{width:16px;height:16px;flex:none;margin-top:1px}
+.opros li.pro .ic{color:var(--pine)}
+.opros li.con{color:var(--ink-3)}
+.opros li.con .ic{color:var(--ink-4)}
+.opros li .ic svg{width:16px;height:16px}
+.ometa{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--hair-soft)}
+.ometa span{font-family:var(--font-num);font-size:11px;color:var(--ink-3);background:var(--paper-2);border-radius:6px;padding:5px 10px}
+.ometa span b{color:var(--ink-2);font-weight:600}
+
+/* ===== 方向 B:同页两版 ===== */
+.versus{display:flex;align-items:stretch;gap:0}
+.vcol{width:496px;display:flex;flex-direction:column;gap:14px;padding:0 30px}
+.vcol+.vcol{border-left:1px solid var(--hair)}
+.vhead{display:flex;align-items:center;gap:10px}
+.vhead .vt{font-size:16px;font-weight:700}
+.vhead .badge{font-family:var(--font-num);font-size:11px;font-weight:600;border-radius:6px;padding:2px 8px}
+.vhead .badge.fast{color:var(--pine-deep);background:var(--pine-soft)}
+.vhead .badge.slow{color:var(--amber);background:var(--amber-soft)}
+.vhead .rec{margin-left:auto;font-size:11.5px;color:var(--pine);font-weight:600;display:flex;align-items:center;gap:5px}
+.vhead .rec svg{width:13px;height:13px}
+.vframe{border-radius:8px;padding:8px;background:var(--paper-2);border:1px solid var(--hair)}
+.vframe.recf{border-color:var(--pine-line);background:var(--pine-soft)}
+.vmeta{display:flex;gap:18px;font-size:12px;color:var(--ink-3)}
+.vmeta b{color:var(--ink-2);font-weight:600;font-family:var(--font-num)}
+.vbtn{margin-top:auto;font-family:var(--font-cn);font-size:14px;font-weight:500;border-radius:11px;padding:12px;text-align:center;cursor:pointer;border:1px solid var(--hair);background:var(--paper-1);color:var(--ink)}
+.vbtn.primary{background:var(--pine);border-color:var(--pine);color:#fff}
+.vbtn.primary::before{content:"✓  "}
+.vsbadge{align-self:center;display:flex;align-items:center}
+.vsbadge i{font-family:var(--font-num);font-size:13px;font-weight:600;color:var(--ink-3);background:var(--paper-1);border:1px solid var(--hair);border-radius:50%;width:40px;height:40px;display:grid;place-items:center}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="brandline">
+    <div class="glyph"></div>
+    <h1><b>Jumpx Slides</b> · 选输出形态</h1>
+    <span class="sub">渲染前最后一问 · 2 个方向</span>
+  </div>
+  <div class="note">
+    <div class="cell">
+      <div class="k">这一屏的角色</div>
+      <p>渲染前的最后一问:用 <b>HTML 网页式</b> 还是 <b>AI 配图式</b> 生成。二选一,副驾基于内容给出推荐并预选(清单+图表 → HTML 更快更好改)。诚实呈现取舍,而不是只夸优点。</p>
+    </div>
+    <div class="cell">
+      <div class="k">方向 A — 双卡对比</div>
+      <p>两张大卡并列:各自一张代表预览 + 优缺点清单 + 速度/可编辑/体积标签。信息齐全,适合想看清差异再决定。</p>
+    </div>
+    <div class="cell">
+      <div class="k">方向 B — 同页两版</div>
+      <p>把同一页内容分别用两种形态渲染并排,直接看到"长什么样的差别",下面各一个选择按钮。最直观、最有底气。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 方向 A:双卡对比 ============ -->
+<div class="option">
+  <div class="opt-label"><span class="opt-tag">方向 A</span><h2>双卡对比</h2><span class="d">预览 + 优缺点 + 智能预选</span></div>
+  <div class="app">
+    <div class="topbar">
+      <div class="tb-brand"><div class="tb-glyph"></div><span class="tb-name">Jumpx</span></div>
+      <div class="tb-divline"></div>
+      <div class="proj"><span class="t">重新认识睡眠</span><span class="chap"> · 第三章作业</span></div>
+      <div class="steps">
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">输入</span></div>
+        <span class="bar fill"></span>
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">大纲</span></div>
+        <span class="bar fill"></span>
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">选模板</span></div>
+        <span class="bar fill"></span>
+        <div class="step cur"><span class="num">4</span><span class="lb">渲染</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">5</span><span class="lb">完成</span></div>
+      </div>
+      <div class="tb-right">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回模板</button>
+        <button class="btn primary">用 HTML 生成 · 开始<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="center">
+      <div class="headrow">
+        <div class="kick">渲染前最后一步</div>
+        <h2>用哪种形态生成?</h2>
+        <div class="agentnote"><span class="ai"><i></i></span><span>你这份偏 <b>清单 + 图表</b>,我建议用 <b>HTML</b>——更快、文字清晰、还能直接改。</span></div>
+      </div>
+
+      <div class="cards">
+        <!-- HTML 卡 -->
+        <label class="ocard sel">
+          <span class="orib"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.6 6.3L21 9l-5 4.3L17.5 21 12 17.3 6.5 21 8 13.3 3 9l6.4-.7z"/></svg>副驾推荐</span>
+          <span class="oradio"></span>
+          <div class="ms ms-html">
+            <div class="k">02 · 核心发现</div>
+            <div class="ti">三个被低估的睡眠杠杆</div>
+            <div class="cols">
+              <ul><li>固定起床时间</li><li>午后断咖啡因</li><li>睡前降核心体温</li></ul>
+              <div class="chart"><i style="height:48%"></i><i style="height:78%"></i><i style="height:62%"></i><i style="height:92%"></i></div>
+            </div>
+          </div>
+          <div class="ocard-b">
+            <div class="oname">HTML 网页式 <span class="badge fast">秒级</span></div>
+            <div class="odesc">用代码排版生成,文字清晰锐利,可继续编辑,能直接网页演示或导出 PDF。</div>
+            <ul class="opros">
+              <li class="pro"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></span>生成快,几秒一页,可随时重排</li>
+              <li class="pro"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></span>文字 / 排版可继续编辑</li>
+              <li class="pro"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></span>适合清单、图表、文字为主</li>
+            </ul>
+            <div class="ometa"><span>速度 <b>快</b></span><span>可编辑 <b>高</b></span><span>体积 <b>轻</b></span></div>
+          </div>
+        </label>
+
+        <!-- AI 配图卡 -->
+        <label class="ocard">
+          <span class="oradio"></span>
+          <div class="ms ms-ai">
+            <div class="img"><span>AI 生成 · 卧室夜色插画</span></div>
+            <div class="ov"><div class="k">02 · 核心发现</div><div class="ti">三个被低估的睡眠杠杆</div></div>
+          </div>
+          <div class="ocard-b">
+            <div class="oname">AI 配图式 <span class="badge slow">较慢</span></div>
+            <div class="odesc">每页由 AI 生成插画 / 氛围图,更有画面感与设计感,适合重视觉的分享。</div>
+            <ul class="opros">
+              <li class="pro"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></span>视觉丰富,封面 / 主题页惊艳</li>
+              <li class="pro"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></span>自动配图,无需自己找素材</li>
+              <li class="con"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/></svg></span>图片生成较慢,且不易再改</li>
+            </ul>
+            <div class="ometa"><span>速度 <b>较慢</b></span><span>视觉 <b>强</b></span><span>适合 <b>重画面</b></span></div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 方向 B:同页两版 ============ -->
+<div class="option">
+  <div class="opt-label"><span class="opt-tag">方向 B</span><h2>同页两版</h2><span class="d">同一页两种形态并排 · 看到差别再选</span></div>
+  <div class="app">
+    <div class="topbar">
+      <div class="tb-brand"><div class="tb-glyph"></div><span class="tb-name">Jumpx</span></div>
+      <div class="tb-divline"></div>
+      <div class="proj"><span class="t">重新认识睡眠</span><span class="chap"> · 第三章作业</span></div>
+      <div class="steps">
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">输入</span></div>
+        <span class="bar fill"></span>
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">大纲</span></div>
+        <span class="bar fill"></span>
+        <div class="step done"><span class="num"><svg viewBox="0 0 24 24" width="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span class="lb">选模板</span></div>
+        <span class="bar fill"></span>
+        <div class="step cur"><span class="num">4</span><span class="lb">渲染</span></div>
+        <span class="bar"></span>
+        <div class="step"><span class="num">5</span><span class="lb">完成</span></div>
+      </div>
+      <div class="tb-right">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回模板</button>
+        <button class="btn primary">用 HTML 生成 · 开始<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="center">
+      <div class="headrow">
+        <div class="kick">渲染前最后一步</div>
+        <h2>同一页,两种形态长这样</h2>
+        <div class="agentnote"><span class="ai"><i></i></span><span>都是第 4 页「核心发现」——你更想要哪种?我推荐左边 <b>HTML</b>。</span></div>
+      </div>
+
+      <div class="versus">
+        <div class="vcol">
+          <div class="vhead"><span class="vt">HTML 网页式</span><span class="badge fast">秒级</span><span class="rec"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.3L21 9l-5 4.3L17.5 21 12 17.3 6.5 21 8 13.3 3 9l6.4-.7z"/></svg>推荐</span></div>
+          <div class="vframe recf">
+            <div class="ms ms-html">
+              <div class="k">02 · 核心发现</div>
+              <div class="ti">三个被低估的睡眠杠杆</div>
+              <div class="cols">
+                <ul><li>固定起床时间</li><li>午后断咖啡因</li><li>睡前降核心体温</li></ul>
+                <div class="chart"><i style="height:48%"></i><i style="height:78%"></i><i style="height:62%"></i><i style="height:92%"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="vmeta"><span>速度 <b>快</b></span><span>可编辑 <b>高</b></span><span>体积 <b>轻</b></span></div>
+          <div class="vbtn primary">用这种 · 开始渲染</div>
+        </div>
+
+        <div class="vcol">
+          <div class="vhead"><span class="vt">AI 配图式</span><span class="badge slow">较慢</span></div>
+          <div class="vframe">
+            <div class="ms ms-ai">
+              <div class="img"><span>AI 生成 · 卧室夜色插画</span></div>
+              <div class="ov"><div class="k">02 · 核心发现</div><div class="ti">三个被低估的睡眠杠杆</div></div>
+            </div>
+          </div>
+          <div class="vmeta"><span>速度 <b>较慢</b></span><span>视觉 <b>强</b></span><span>编辑 <b>受限</b></span></div>
+          <div class="vbtn">改用这种</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

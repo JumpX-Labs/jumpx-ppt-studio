@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ui",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["--cwd", "ui", "dev", "--port", "3002"],
+      "port": 3002
+    },
+    {
+      "name": "static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4180"],
+      "port": 4180
+    }
+  ]
+}

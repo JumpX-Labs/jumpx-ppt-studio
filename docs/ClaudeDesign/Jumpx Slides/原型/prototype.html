@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jumpx Slides · 完整流程原型</title>
+<!--
+  完整可点击流程原型：输入 → 大纲 → 选模板 → 选输出形态 → 渲染(骨架屏→逐页点亮高光) → 完成
+  Claude Design 已产出 proto.css + proto-data.js；以下 4 个 JSX + 本组装文件按其文件计划补齐（Claude Code）。
+  需经 http 打开（Babel standalone 通过 XHR 取 .jsx，file:// 会被 CORS 拦）：
+    http://localhost:4180/docs/ClaudeDesign/Jumpx%20Slides/原型/prototype.html
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- 带时间戳避免开发期 proto.css 被浏览器缓存 -->
+<script>document.write('<link rel="stylesheet" href="proto.css?v=' + Date.now() + '">');</script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- 数据（纯 JS） -->
+<script src="proto-data.js"></script>
+
+<!-- 组件（JSX，按依赖顺序：slide → screens → workbench → app） -->
+<script type="text/babel" data-presets="react" src="proto-slide.jsx"></script>
+<script type="text/babel" data-presets="react" src="proto-screens.jsx"></script>
+<script type="text/babel" data-presets="react" src="proto-workbench.jsx"></script>
+<script type="text/babel" data-presets="react" src="proto-skills.jsx"></script>
+<script type="text/babel" data-presets="react" src="proto-recipe.jsx"></script>
+<script type="text/babel" data-presets="react" src="proto-app.jsx"></script>
+<!-- 挂载并入 proto-app.jsx 末尾 -->
+</body>
+</html>

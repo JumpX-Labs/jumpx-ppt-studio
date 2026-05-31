@@ -1,0 +1,6 @@
+# Jumpx Slides 交互原型 · Cloudflare Workers 静态资源部署
+name = "jumpx-slides-demo"
+compatibility_date = "2026-05-31"
+
+[assets]
+directory = "./demo-dist"

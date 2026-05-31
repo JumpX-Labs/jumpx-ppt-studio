@@ -1,0 +1,5 @@
+# deepagents 引擎 + LangGraph 本地 server + OpenAI 兼容 model 包
+deepagents>=0.6.7
+langgraph-cli[inmem]>=0.2.0
+langchain-openai>=0.3.0
+python-dotenv>=1.0.0
