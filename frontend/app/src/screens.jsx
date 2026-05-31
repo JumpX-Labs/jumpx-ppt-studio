@@ -21,18 +21,28 @@ function InputScreen({ onStart }) {
   const [styleName, setStyleName] = useStateS('');   // 本次使用的导入风格 style_name
   const [styleLabel, setStyleLabel] = useStateS(''); // 显示名
   const [importingStyle, setImportingStyle] = useStateS(false);
+  const [styleHelpOpen, setStyleHelpOpen] = useStateS(false);
   const fileRef = React.useRef(null);
   const styleRef = React.useRef(null);
   const examples = ['15 分钟生活圈', '用户增长的第一性原理', '宋代美学入门', '我的产品复盘'];
 
+  function readAsDataURL(file) {
+    return new Promise((res, rej) => {
+      const fr = new FileReader();
+      fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(file);
+    });
+  }
   async function onPickStyle(e) {
-    const f = (e.target.files || [])[0];
-    if (!f) return;
+    const fs = Array.from(e.target.files || []);
+    if (!fs.length) return;
+    setStyleHelpOpen(false);
     setImportingStyle(true);
     try {
-      const label = (f.name || '参考风格').replace(/\.[^.]+$/, '');
-      const r = await fetch('/api/styles/import?name=' + encodeURIComponent(label), {
-        method: 'POST', headers: { 'content-type': f.type || 'image/png' }, body: await f.arrayBuffer(),
+      const label = (fs[0].name || '参考风格').replace(/\.[^.]+$/, '') + (fs.length > 1 ? ` 等${fs.length}图` : '');
+      const images = await Promise.all(fs.slice(0, 4).map(readAsDataURL));
+      const r = await fetch('/api/styles/import', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: label, images }),
       });
       const j = await r.json();
       if (j && j.style_name) { setStyleName(j.style_name); setStyleLabel(label); }
@@ -98,9 +108,9 @@ function InputScreen({ onStart }) {
               <button className="attach" onClick={() => fileRef.current && fileRef.current.click()} disabled={busy}>
                 {busy ? <span className="ring" style={{ width: 13, height: 13 }} /> : '＋'} {busy ? '解析中…' : '上传资料'}
               </button>
-              <input ref={styleRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={onPickStyle} />
-              <button className="attach" onClick={() => styleRef.current && styleRef.current.click()} disabled={importingStyle}
-                title="上传一张参考图，AI 识别它的视觉风格用于本次生成">
+              <input ref={styleRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={onPickStyle} />
+              <button className="attach" onClick={() => setStyleHelpOpen(true)} disabled={importingStyle}
+                title="上传参考图，AI 识别它的视觉风格用于本次生成">
                 {importingStyle ? <span className="ring" style={{ width: 13, height: 13 }} /> : '🎨'} {importingStyle ? '识别风格…' : '样式导入'}
               </button>
               {matChars > 0 && <span className="hintn">已附资料 {matChars} 字</span>}
@@ -121,6 +131,37 @@ function InputScreen({ onStart }) {
           <div className="reassure"><span className="pdot" />整个过程约 1–2 分钟，你随时可以打断或修改。</div>
         </div>
       </div>
+      {styleHelpOpen && (
+        <div className="dlg-mask" onClick={() => setStyleHelpOpen(false)}>
+          <div className="dlg" onClick={e => e.stopPropagation()}>
+            <div className="dlg-h">🎨 样式导入 · 上传参考图</div>
+            <p className="dlg-lead">AI 会“看”你的图，提取它的<b>配色、字体气质、信息密度、版式倾向</b>，作为本次生成的视觉风格（并存入样式库）。</p>
+            <div className="dlg-cols">
+              <div className="dlg-good">
+                <div className="dlg-t">✅ 适合上传</div>
+                <ul>
+                  <li>幻灯片截图（建议<b>多张</b>，风格读得更准）</li>
+                  <li>海报 / 主视觉设计图</li>
+                  <li>风格鲜明的网页或排版截图</li>
+                </ul>
+              </div>
+              <div className="dlg-bad">
+                <div className="dlg-t">🚫 不建议</div>
+                <ul>
+                  <li>人物/风景照、表情包</li>
+                  <li>纯文字文档截图（没有设计风格）</li>
+                  <li>和你要做的 deck 风格无关的图</li>
+                </ul>
+              </div>
+            </div>
+            <div className="dlg-note">支持 PNG / JPG，最多 4 张一起传（取共同风格）。学到配色与字体；版式会套用最接近的内置骨架。</div>
+            <div className="dlg-acts">
+              <button className="btn" onClick={() => setStyleHelpOpen(false)}>取消</button>
+              <button className="btn primary" onClick={() => styleRef.current && styleRef.current.click()}>选择图片</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

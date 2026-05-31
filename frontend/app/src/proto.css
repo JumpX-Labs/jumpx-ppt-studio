@@ -260,6 +260,18 @@ button{font-family:inherit}
 .attach:hover{border-color:var(--ink-4)}
 .attach:disabled{opacity:.6;cursor:default}
 .style-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--pine-deep);background:var(--pine-soft);border:1px solid var(--pine-line);border-radius:20px;padding:4px 10px}
+/* 样式导入引导弹窗 */
+.dlg-mask{position:fixed;inset:0;z-index:320;background:rgba(20,24,22,.4);backdrop-filter:blur(3px);display:grid;place-items:center;padding:30px}
+.dlg{background:var(--paper-0);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow-card);width:min(560px,100%);padding:24px 26px}
+.dlg-h{font-size:17px;font-weight:600;margin-bottom:8px}
+.dlg-lead{font-size:13.5px;line-height:1.65;color:var(--ink-2);margin:0 0 16px}
+.dlg-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dlg-good,.dlg-bad{border:1px solid var(--hair);border-radius:11px;padding:12px 14px;background:var(--paper-1)}
+.dlg-t{font-size:13px;font-weight:600;margin-bottom:8px}
+.dlg-cols ul{margin:0;padding-left:16px}
+.dlg-cols li{font-size:12.5px;line-height:1.7;color:var(--ink-2)}
+.dlg-note{font-size:12px;color:var(--ink-3);margin:14px 0 18px;line-height:1.6}
+.dlg-acts{display:flex;justify-content:flex-end;gap:10px}
 .style-chip i{cursor:pointer;font-style:normal;opacity:.6}
 .style-chip i:hover{opacity:1}
 /* 样式库面板 */

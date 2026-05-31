@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import os
+import re
 import tempfile
 
 from starlette.applications import Starlette
@@ -109,14 +110,34 @@ async def list_styles(request):
     return JSONResponse({"styles": STYLE.list_styles(R.get_active())})
 
 
+def _decode_data_uri(uri: str):
+    """data:image/png;base64,xxxx → (bytes, mime)。"""
+    import base64 as _b64
+    m = re.match(r"data:(?P<mime>[^;]+);base64,(?P<b64>.+)", uri or "", re.S)
+    if not m:
+        return None
+    return _b64.b64decode(m.group("b64")), m.group("mime")
+
+
 async def import_style(request):
-    data = await request.body()
-    if not data:
-        return JSONResponse({"error": "empty body（POST 图片字节）"}, status_code=400)
+    ctype = request.headers.get("content-type", "")
     label = request.query_params.get("name", "参考风格")
-    mime = request.headers.get("content-type", "image/png")
+    images = []
+    if "application/json" in ctype:
+        body = await request.json()
+        label = body.get("name") or label
+        for uri in (body.get("images") or []):
+            dec = _decode_data_uri(uri)
+            if dec:
+                images.append(dec)
+    else:  # 原始字节（单图回退）
+        data = await request.body()
+        if data:
+            images.append((data, ctype or "image/png"))
+    if not images:
+        return JSONResponse({"error": "没有有效图片"}, status_code=400)
     try:
-        res = STYLE.import_from_image(R.get_active(), data, label, mime=mime)
+        res = STYLE.import_from_images(R.get_active(), images, label)
         return JSONResponse(res)
     except Exception as e:  # noqa: BLE001
         return JSONResponse({"error": f"风格识别失败：{e}"}, status_code=400)

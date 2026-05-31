@@ -230,7 +230,11 @@
   - **去掉右上角用户头像**(无账号概念)。
   - **持久化说明**:导入风格由后端写进当前配方的 `assets/`(workspace 卷,磁盘持久、跨会话在、库里可见),不需要 localStorage。
   - **验证(浏览器)**:输入页双按钮、头像消失、样式库列 7 内置 + 导入后出现「导入」卡(eval 确认)、导入 HTTP 通。`vite build` 通过。测试残留 reseed 清理。
-  - **遗留**:跑一遍"UI 导入风格→用它生成 deck"完整闭环(需一次真生成 + 确认 Designer 用上 imported style_name)；`choose_template` 覆盖层可选列出 imported 风格。
+- **Phase 9c · 样式导入引导弹窗 + 多图 — 完成 ✅**(用户:点导入先弹框提示传什么图,避免无关图)
+  - 点「样式导入」先弹**引导框**:说明会提取配色/字体/密度/版式;✅适合(幻灯片多张截图/海报/风格鲜明排版)vs 🚫不建议(人物风景照/纯文字文档/无关图);"PNG/JPG,最多 4 张取共同风格"。「选择图片」才开文件选择。
+  - **支持多图**:`analyze_images([...])` 一次喂多张取统一风格;后端 `/styles/import` 收 JSON `{name,images:[dataURI]}`(原始字节单图仍兼容);前端多选 + FileReader→dataURI→JSON。
+  - **验证**:多图 JSON 导入 HTTP 通;浏览器弹框正确渲染(dlg/适合/不建议/multiple=true)。`vite build` 通过。
+  - **遗留**:跑一遍"UI 导入风格→用它生成 deck"完整闭环(需一次真生成 + 确认 Designer 用上 imported style_name)。
 - **后续可选**:① Phase 4b-3 可编辑版 PPTX(移植 PPTAgent html2pptx,Node+pptxgenjs,接受富 CSS 主题保真退化)② Electron 桌面版(双击启动,后期)③ 出图路径(AI 配图,需图片 backend key)。**核心 MVP(生成→交互→预览→导出 PDF/PNG/PPTX/HTML→单机 Docker)已闭环。**
 
 ## 护栏自检

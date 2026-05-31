@@ -31,22 +31,29 @@ def _client():
     return OpenAI(base_url=os.environ["ARK_BASE_URL"], api_key=os.environ["ARK_API_KEY"])
 
 
-def analyze_image(image_bytes: bytes, mime: str = "image/png") -> dict:
-    """调视觉模型，返回风格 dict。失败抛异常。"""
+def analyze_images(images: list[tuple[bytes, str]]) -> dict:
+    """调视觉模型综合多张图，返回风格 dict。多图取共同的视觉风格。失败抛异常。"""
+    if not images:
+        raise ValueError("没有图片")
+    images = images[:4]  # 最多 4 张，控 token
     model = os.environ.get("ARK_VISION_MODEL", "Doubao-Seed-2.0-lite")
-    b64 = base64.b64encode(image_bytes).decode()
+    hint = PROMPT if len(images) == 1 else (
+        PROMPT + "\n\n注意：下面是同一套设计的多张图，请综合它们提炼出**统一的**视觉风格。")
+    content = [{"type": "text", "text": hint}]
+    for b, mime in images:
+        content.append({"type": "image_url",
+                        "image_url": {"url": f"data:{mime};base64,{base64.b64encode(b).decode()}"}})
     resp = _client().chat.completions.create(
-        model=model, max_tokens=600,
-        messages=[{"role": "user", "content": [
-            {"type": "text", "text": PROMPT},
-            {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}},
-        ]}],
-    )
+        model=model, max_tokens=600, messages=[{"role": "user", "content": content}])
     out = resp.choices[0].message.content or ""
     m = re.search(r"\{.*\}", out, re.S)
     if not m:
         raise ValueError(f"模型未返回 JSON：{out[:200]}")
     return json.loads(m.group(0))
+
+
+def analyze_image(image_bytes: bytes, mime: str = "image/png") -> dict:
+    return analyze_images([(image_bytes, mime)])
 
 
 def _slug(label: str) -> str:
@@ -163,8 +170,12 @@ def list_styles(rid: str) -> list[dict]:
     return out
 
 
-def import_from_image(rid: str, image_bytes: bytes, label: str, mime: str = "image/png") -> dict:
-    style = analyze_image(image_bytes, mime)
+def import_from_images(rid: str, images: list[tuple[bytes, str]], label: str) -> dict:
+    style = analyze_images(images)
     result = emit_style(rid, style, label)
     result["analyzed"] = style
     return result
+
+
+def import_from_image(rid: str, image_bytes: bytes, label: str, mime: str = "image/png") -> dict:
+    return import_from_images(rid, [(image_bytes, mime)], label)
