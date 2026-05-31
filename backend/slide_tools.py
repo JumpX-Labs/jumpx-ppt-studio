@@ -51,6 +51,18 @@ def choose_template(recommended: list[str], note: str = "") -> str:
 
 
 @tool
+def confirm_outline(outline_md: str, note: str = "") -> str:
+    """交互点：把生成的大纲交给用户确认 / 修改（大纲门禁）。
+
+    在写好 runs/<project>/source/outline.md 之后、进入 slide_plan 之前调用。
+    `outline_md`：大纲全文（供 UI 以"左树/右预览"呈现）。
+    `note`：给用户的一句话（如"4 章 12 页，约 10 分钟"）。
+    返回用户的确认("OK")或修改意见；用户不改时默认放行。
+    """
+    return "OK"
+
+
+@tool
 def choose_render_mode(note: str = "") -> str:
     """交互点②：请用户选择输出形态——HTML 幻灯片 还是 生成图片。
 
@@ -122,4 +134,4 @@ def generate_image(prompt: str, out_path: str) -> str:
     )
 
 
-SLIDE_TOOLS = [choose_template, choose_render_mode, build_slides_html, generate_image]
+SLIDE_TOOLS = [confirm_outline, choose_template, choose_render_mode, build_slides_html, generate_image]

@@ -50,11 +50,13 @@ schemas/ 下的细则与 JSON Schema。
 - 出图 → 调用工具 `generate_image`（替代 generate_images.py；图片 API 在 web 后端）。
 - 不需要探测图片 backend（probe_image_backend.py）；`generate_image` 会直接告诉你是否可用。
 
-【两个必经的交互点（停下来问用户）】
-1. 选模板：在确定视觉风格 / 写 style_lock 之前，必须调用工具 `choose_template`，
+【三个必经的交互点（停下来问用户，按顺序）】
+1. 确认大纲：写好 /runs/<slug>/source/outline.md 后、进入 slide_plan 之前，必须调用
+   工具 `confirm_outline`(传大纲全文),由用户确认或修改后再继续。
+2. 选模板：在确定视觉风格 / 写 style_lock 之前，必须调用工具 `choose_template`，
    传 2-3 个你推荐的 preset id，由用户拍板。
-2. 出图还是 HTML：在渲染之前，必须调用工具 `choose_render_mode`，由用户拍板。
-这两步会暂停等用户响应，拿到结果后再继续。用户不选时：模板默认 teaching-clean，
+3. 出图还是 HTML：在渲染之前，必须调用工具 `choose_render_mode`，由用户拍板。
+这三步会暂停等用户响应，拿到结果后再继续。用户不选时：大纲放行、模板默认 teaching-clean、
 形态默认 html。
 
 【工作目录约定】
@@ -75,15 +77,46 @@ schemas/ 下的细则与 JSON Schema。
 - 响应语言匹配用户输入。
 """
 
-agent = create_deep_agent(
-    model=model,
-    tools=SLIDE_TOOLS,
-    system_prompt=SYSTEM_PROMPT,
-    backend=backend,
-    skills=["/skills/ai-slide-producer"],
-    interrupt_on={
-        "choose_template": {"allowed_decisions": ["approve", "respond"]},
-        "choose_render_mode": {"allowed_decisions": ["approve", "respond"]},
-    },
-)
-# 注意：langgraph dev 托管下不传 checkpointer，持久化（interrupt 所需）由平台自动提供。
+# 三个交互点都走 interrupt_on（respond=用户作答 / approve=接受默认）
+INTERRUPT_ON = {
+    "confirm_outline": {"allowed_decisions": ["approve", "respond"]},
+    "choose_template": {"allowed_decisions": ["approve", "respond"]},
+    "choose_render_mode": {"allowed_decisions": ["approve", "respond"]},
+}
+
+# 默认 active 配方（Phase 2 起改为按用户选定的配方目录）
+DEFAULT_RECIPE = "/skills/ai-slide-producer"
+
+
+def build_agent(recipe_dir: str = DEFAULT_RECIPE, *, checkpointer=None):
+    """Agent 工厂：每次生成时 fresh 实例化，挂载当时的 active 配方。
+
+    recipe_dir : 要挂载的配方（skill）虚拟路径（相对 workspace 根）。
+    checkpointer: 嵌入式/单机运行时传本地 SQLite saver；langgraph dev 托管下不传。
+    构建很轻（实测 ~0.02s），适合每次生成新建（"新配方只管下一份、不碰在跑的"）。
+    """
+    return create_deep_agent(
+        model=model,
+        tools=SLIDE_TOOLS,
+        system_prompt=SYSTEM_PROMPT,
+        backend=backend,
+        skills=[recipe_dir],
+        interrupt_on=INTERRUPT_ON,
+        checkpointer=checkpointer,
+    )
+
+
+def make_local_agent(db_path: str | None = None, recipe_dir: str = DEFAULT_RECIPE):
+    """单机嵌入式入口：带本地 SQLite checkpointer，生成可中断、可跨重启恢复。"""
+    import sqlite3
+    from langgraph.checkpoint.sqlite import SqliteSaver
+
+    path = db_path or str(WORKSPACE / "state.sqlite")
+    conn = sqlite3.connect(path, check_same_thread=False)
+    saver = SqliteSaver(conn)
+    saver.setup()
+    return build_agent(recipe_dir, checkpointer=saver)
+
+
+# 给 langgraph dev 用：托管下持久化由平台提供，故不传 checkpointer。
+agent = build_agent()

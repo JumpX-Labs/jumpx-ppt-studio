@@ -138,6 +138,15 @@
   - 已重打包并 `wrangler deploy` 上线(含 proto-skills + proto-recipe),浏览器线上验证通过。
   - 注：开发期 bundle.js 会被浏览器缓存,验证线上请硬刷新或 curl `/bundle.js` 核对。
 
+## 全量实施（git 已 init；branch: feat/phase1-generation-kernel）
+
+- **Phase 1 · 生成内核产品化 — 完成 ✅**
+  - `backend/agent.py`:重构出 **`build_agent(recipe_dir, *, checkpointer)` 工厂**(每次生成 fresh 实例化,实测 ~0.02s)+ **`make_local_agent()`**(单机嵌入式,本地 SQLite checkpointer);`agent` 仍给 langgraph dev 用(不传 checkpointer)。
+  - 新增 **`confirm_outline` 交互点**(大纲门禁,interrupt_on respond);三交互点 = confirm_outline / choose_template / choose_render_mode。
+  - **验证**:嵌入式真模型跑通到 `confirm_outline` 中断(70s/22 msg)、SQLite 落盘;跨进程 resume 见 TECH_SPIKES S2;整本 deck 见阶段3。
+  - 小修待办(实施期):校验门按 `validate_slide_plan` 输出判定(补 exit code);workspace root 收窄到"仅 active 配方 + 本次 run"。
+- **下一步 · Phase 2 · 配方系统后端**:recipes/ 目录 + active 指针 + 吸收可改层(S5)+ 验证 skill(S3)+ zip 导入导出 + schema 升级复验。见 [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md)。
+
 ## 护栏自检
 - [x] 未 git commit / push。
 - [x] 未硬编码任何 key。
