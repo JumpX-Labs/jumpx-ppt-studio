@@ -20,11 +20,13 @@ from deepagents.backends import FilesystemBackend
 
 from setup_workspace import ensure_workspace
 from slide_tools import SLIDE_TOOLS
+import recipes
 
 load_dotenv()
 
 # 确保 workspace/skills/ai-slide-producer 就位（幂等）。
 WORKSPACE = ensure_workspace()
+recipes.ensure_recipes()  # 配方库 + 内置 default + active 指针
 
 model = ChatOpenAI(
     model=os.environ.get("ARK_MODEL", "ark-code-latest"),
@@ -84,14 +86,10 @@ INTERRUPT_ON = {
     "choose_render_mode": {"allowed_decisions": ["approve", "respond"]},
 }
 
-# 默认 active 配方（Phase 2 起改为按用户选定的配方目录）
-DEFAULT_RECIPE = "/skills/ai-slide-producer"
-
-
-def build_agent(recipe_dir: str = DEFAULT_RECIPE, *, checkpointer=None):
+def build_agent(recipe_dir: str | None = None, *, checkpointer=None):
     """Agent 工厂：每次生成时 fresh 实例化，挂载当时的 active 配方。
 
-    recipe_dir : 要挂载的配方（skill）虚拟路径（相对 workspace 根）。
+    recipe_dir : 配方（skill）虚拟路径（相对 workspace 根）；None=用当前 active 配方。
     checkpointer: 嵌入式/单机运行时传本地 SQLite saver；langgraph dev 托管下不传。
     构建很轻（实测 ~0.02s），适合每次生成新建（"新配方只管下一份、不碰在跑的"）。
     """
@@ -100,13 +98,13 @@ def build_agent(recipe_dir: str = DEFAULT_RECIPE, *, checkpointer=None):
         tools=SLIDE_TOOLS,
         system_prompt=SYSTEM_PROMPT,
         backend=backend,
-        skills=[recipe_dir],
+        skills=[recipe_dir or recipes.active_skill_path()],
         interrupt_on=INTERRUPT_ON,
         checkpointer=checkpointer,
     )
 
 
-def make_local_agent(db_path: str | None = None, recipe_dir: str = DEFAULT_RECIPE):
+def make_local_agent(db_path: str | None = None, recipe_dir: str | None = None):
     """单机嵌入式入口：带本地 SQLite checkpointer，生成可中断、可跨重启恢复。"""
     import sqlite3
     from langgraph.checkpoint.sqlite import SqliteSaver
