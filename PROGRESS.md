@@ -145,7 +145,14 @@
   - 新增 **`confirm_outline` 交互点**(大纲门禁,interrupt_on respond);三交互点 = confirm_outline / choose_template / choose_render_mode。
   - **验证**:嵌入式真模型跑通到 `confirm_outline` 中断(70s/22 msg)、SQLite 落盘;跨进程 resume 见 TECH_SPIKES S2;整本 deck 见阶段3。
   - 小修待办(实施期):校验门按 `validate_slide_plan` 输出判定(补 exit code);workspace root 收窄到"仅 active 配方 + 本次 run"。
-- **下一步 · Phase 2 · 配方系统后端**:recipes/ 目录 + active 指针 + 吸收可改层(S5)+ 验证 skill(S3)+ zip 导入导出 + schema 升级复验。见 [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md)。
+- **Phase 2 · 配方系统后端 — 完成 ✅**(commit 89d6aa5)
+  - `backend/recipes.py`:配方=skill 目录;`workspace/recipes/` 库 + `_active` + manifest(含 contract_version)。
+  - 可改层白名单(02/03/05 + background.md + 12)；`absorb()` 上传**只吸收可改层、锁定层用我们基座、回告被忽略改动**;fork/export_zip/import_zip/validate_recipe/revalidate_all。
+  - 验证(无 LLM):导入篡改包→可改层吸收、锁定篡改被忽略+回告;坏配方被 validate 挡下;build_agent 挂 active。
+- **Phase 3a · 配方 HTTP API — 完成 ✅**(commit f1995e7)
+  - `backend/recipe_api.py`(Starlette,无新依赖):列表/active/单配方 GET-PUT(只写可改层,锁定拒绝并回告)/fork/import(原始 zip 字节)/export/revalidate。
+  - 验证(TestClient,无 LLM):全路由通;PUT 写锁定层被拒、可改层写入、契约校验跟跑。
+- **下一步 · Phase 3b · 前端(最大块)**:把 `docs/ClaudeDesign/.../原型/proto-*.jsx` port 成真 React/Next 构建;连 LangGraph 流(messages/updates/files/interrupt → 模板网格/同页两版/大纲编辑器 主舞台覆盖层);配方页接 `recipe_api`。然后 Phase 4 导出(PPTX)/Phase 5 打包。见 [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md)。
 
 ## 护栏自检
 - [x] 未 git commit / push。
