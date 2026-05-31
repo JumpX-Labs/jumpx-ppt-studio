@@ -218,7 +218,13 @@
   - `requirements.txt` 加 `markitdown[pdf,docx,pptx,xlsx]`;`recipe_api` 的 `/extract` 重写为 markitdown 统一解析(按 `?name=` 扩展名落临时文件→convert→Markdown;pdf 失败回退 pypdf;纯文本回退 utf-8;扫描件/纯图片提示暂不支持 OCR)。
   - 前端 `onPickFiles` 改为所有文件带文件名送后端;accept 放开 PDF/Word/PPTX/Excel/CSV/HTML/txt/md;按钮文案「上传资料（PDF/Word/PPT/Excel）」。
   - **验证**:PPTX 抽出标题+要点(带 slide 标记)、PDF 1276 字(含表格,优于 pypdf)、HTML 1473 字干净 md、md 直通。`vite build` 通过。
-- **Phase 9（待协作）· 风格导入 skill（视觉模型识别）**:用户定方向——**不走取色**,用**视觉模型**看 PPTX/图片识别风格,且要**和用户一起配一个"提取样式的 skill"**;用户将提供**视觉 model id**。现有事实备查:我们的"风格"=preset.json+css+style_lock 三元组,`style_name` 是封闭枚举需在配方拷贝里放开,build_html 只注入 7 个 `--asp-*`(详见 `PARSE_STYLE_RESEARCH.md`)。**待用户给视觉 model id + 一起开工。**
+- **Phase 9 · 风格导入 skill（视觉模型）后端 — 完成 ✅**(用户:用视觉模型识别、固化成可复用 skill、先只做图片)
+  - 视觉模型 **Doubao-Seed-2.0-lite**(火山同 base_url+key，`.env: ARK_VISION_MODEL`)。**两步测试通过**:① 模型能看图(读出文字+主色)② 喂图→结构化风格 JSON(几乎还原 teaching-clean 真实配色 #2563EB/#F8FAFC，字段对齐)。
+  - **skill 固化**:`backend/style_extractor/`(SKILL.md + 可配置 `PROMPT.md`)+ `backend/style_import.py`：`analyze_image`(调视觉模型→风格 JSON)、`emit_style`(产出新风格三元组进**当前配方拷贝**：`assets/style-presets/imported-<slug>.json` + 复制最近骨架 CSS[sans→teaching-clean/serif→editorial/handwriting→sketch-notes]并替换 7 个 `--asp-*` + 放开该配方 schema 的 style_name enum→pattern)、`list_styles`、唯一命名防撞。
+  - `recipe_api`:`POST /styles/import`(图片→新 style_name)、`GET /styles`;`vite.config` 加 `/api/styles` 代理。
+  - **验证(HTTP·真图真模型)**:`/styles/import` 封面图→`imported-ref-2`(唯一后缀)、识别 accent #2563eb/bg #f8fafc/sans/"简约干净干练"、preset+css 产出、schema 放开、`/styles` 列 7 内置+导入。测试残留已 reseed 清理(默认配方回干净态、厚版 density=2 保留)。
+  - **诚实边界(v1)**:学配色/字体/密度/mood;版式继承最近骨架(CSS 整文件，版式学不到)；只做图片(PPTX 主题解析后续)。
+  - **下一步(前端)**:① 独立「样式导入」按钮上传图片调 `/styles/import` ② `choose_template` 覆盖层列出 imported 风格供选用 ③ 跑一遍"导入风格→用它生成"闭环。
 - **后续可选**:① Phase 4b-3 可编辑版 PPTX(移植 PPTAgent html2pptx,Node+pptxgenjs,接受富 CSS 主题保真退化)② Electron 桌面版(双击启动,后期)③ 出图路径(AI 配图,需图片 backend key)。**核心 MVP(生成→交互→预览→导出 PDF/PNG/PPTX/HTML→单机 Docker)已闭环。**
 
 ## 护栏自检

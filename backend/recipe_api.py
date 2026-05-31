@@ -19,6 +19,7 @@ from starlette.routing import Route
 import recipes as R
 import runs as RUN
 import export_deck as EXPORT
+import style_import as STYLE
 
 R.ensure_recipes()
 
@@ -100,6 +101,25 @@ async def export_recipe(request):
 
 async def revalidate(request):
     return JSONResponse(R.revalidate_all())
+
+
+# —— 风格导入（视觉模型 skill）：上传图片 → 识别风格 → 产出新 preset 进当前配方 ——
+
+async def list_styles(request):
+    return JSONResponse({"styles": STYLE.list_styles(R.get_active())})
+
+
+async def import_style(request):
+    data = await request.body()
+    if not data:
+        return JSONResponse({"error": "empty body（POST 图片字节）"}, status_code=400)
+    label = request.query_params.get("name", "参考风格")
+    mime = request.headers.get("content-type", "image/png")
+    try:
+        res = STYLE.import_from_image(R.get_active(), data, label, mime=mime)
+        return JSONResponse(res)
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"error": f"风格识别失败：{e}"}, status_code=400)
 
 
 # —— 资料抽取：上传 PDF/Word/PPTX/Excel/HTML/文本 → Markdown，供 Context Pack 吸收 ——
@@ -203,6 +223,8 @@ routes = [
     Route("/recipes/active", set_active, methods=["POST"]),
     Route("/recipes/revalidate", revalidate, methods=["POST"]),
     Route("/extract", extract_text, methods=["POST"]),
+    Route("/styles", list_styles, methods=["GET"]),
+    Route("/styles/import", import_style, methods=["POST"]),
     Route("/recipes/import", import_recipe, methods=["POST"]),
     Route("/recipes/{id}", get_recipe, methods=["GET"]),
     Route("/recipes/{id}", save_recipe, methods=["PUT"]),
