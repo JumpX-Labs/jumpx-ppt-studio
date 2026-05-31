@@ -80,8 +80,8 @@ function App() {
   const projTitle = live ? (topic.split('——')[0].trim() || '新建演示') : (screen === 'input' ? '新建演示' : '重新认识睡眠');
   const projChap = live ? '' : (screen === 'input' ? '' : '· 训练营第三章作业');
 
-  // 输入 → 真生成（live）
-  function startFromInput(t) { setTopic(t); setLive(true); startRun(agent, t); }
+  // 输入 → 真生成（live）；opts 含 len/aud/tone/material（资料）
+  function startFromInput(t, opts = {}) { setTopic(t); setLive(true); startRun(agent, t, opts); }
 
   // 导出：渲染类（PDF/PPTX/PNG）需几秒，fetch→blob→下载，全程给「生成中」反馈
   async function doExport(fmt, href, filename) {

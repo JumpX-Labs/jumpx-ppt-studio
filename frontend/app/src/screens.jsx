@@ -15,7 +15,44 @@ function InputScreen({ onStart }) {
   const [len, setLen] = useStateS('约 12 页');
   const [aud, setAud] = useStateS('同学');
   const [tone, setTone] = useStateS('干练');
+  const [material, setMaterial] = useStateS('');     // 参考资料（粘贴 + 上传抽取，合并）
+  const [files, setFiles] = useStateS([]);           // 已附文件 [{name, chars}]
+  const [busy, setBusy] = useStateS(false);          // 抽取中
+  const fileRef = React.useRef(null);
   const examples = ['15 分钟生活圈', '用户增长的第一性原理', '宋代美学入门', '我的产品复盘'];
+
+  async function onPickFiles(e) {
+    const picked = Array.from(e.target.files || []);
+    if (!picked.length) return;
+    setBusy(true);
+    try {
+      for (const f of picked) {
+        let text = '';
+        const isPdf = /\.pdf$/i.test(f.name) || f.type === 'application/pdf';
+        if (isPdf) {
+          const buf = await f.arrayBuffer();
+          const r = await fetch('/api/extract', { method: 'POST', headers: { 'content-type': 'application/pdf' }, body: buf });
+          const j = await r.json();
+          text = (j && j.text) || '';
+        } else {
+          text = await f.text();   // txt / md 本地读
+        }
+        text = (text || '').trim();
+        if (text) {
+          setMaterial(m => (m ? m + '\n\n' : '') + `# 来自 ${f.name}\n` + text);
+          setFiles(fs => [...fs, { name: f.name, chars: text.length }]);
+        } else {
+          setFiles(fs => [...fs, { name: f.name, chars: 0 }]);
+        }
+      }
+    } catch (err) {
+      alert('资料抽取失败：' + err.message);
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+  const matChars = material.trim().length;
   const Seg = ({ label, val, set, opts }) => (
     <div className="optgrp">
       <span className="gl">{label}</span>
@@ -32,10 +69,17 @@ function InputScreen({ onStart }) {
           <p className="lead">写下一个主题，副驾会先帮你规划大纲。几个关键选择，它会停下来问你的意见。</p>
           <div className="compose">
             <textarea value={topic} onChange={e => setTopic(e.target.value)} placeholder="例如：重新认识睡眠 —— 给训练营同学的 10 分钟分享" />
+            <textarea className="material" value={material} onChange={e => setMaterial(e.target.value)}
+              placeholder="可选 · 粘贴参考资料（笔记 / 文章 / 数据），或上传 PDF —— 副驾会吸收进内容，生成得更有血肉" />
             <div className="foot">
-              <span className="hintn">可粘贴资料 / 上传 PDF · 可选</span>
+              <input ref={fileRef} type="file" accept=".pdf,.txt,.md,application/pdf,text/plain" multiple
+                style={{ display: 'none' }} onChange={onPickFiles} />
+              <button className="attach" onClick={() => fileRef.current && fileRef.current.click()} disabled={busy}>
+                {busy ? <span className="ring" style={{ width: 13, height: 13 }} /> : '＋'} {busy ? '抽取中…' : '上传 PDF / 文本'}
+              </button>
+              {matChars > 0 && <span className="hintn">已附资料 {matChars} 字{files.length ? `（${files.length} 个文件）` : ''}</span>}
               <span className="spacer" />
-              <button className="cta" onClick={() => onStart(topic, { len, aud, tone })}>开始生成 {ARROW}</button>
+              <button className="cta" onClick={() => onStart(topic, { len, aud, tone, material })}>开始生成 {ARROW}</button>
             </div>
           </div>
           <div className="ex">

@@ -207,6 +207,12 @@
     - `05-writer`:on-slide 每要点带支撑层(主点→为什么/数据/例子,正反例);body 4-6 条;speaker_notes ≥150 字**逐字口播稿**(禁导演提示,给正反对照);无源材料从领域常识补数据/例子(标待核实)。density=2(详尽)。
   - **持久化(关键)**:workspace/recipes 是 gitignored 运行态、上游 skill 只读不能改——故新增**入库种子** `backend/recipe_seed/default/`(厚版 05-writer/03-strategist + manifest_overrides.json),`recipes._seed_from_base` 在 base 之上叠加(`_apply_seed_overrides`,仅覆盖 EDITABLE + META_FIELDS 白名单)。表达「锁定基座 + 我们的默认配方可改层覆盖」。
   - **验证(真生成两轮对照)**:页面质变——封面有钩子+数据(认知≈两天没睡)、新增机制页(脑脊液冲洗/阿尔茨海默蛋白)、误区→事实带理由、行动带机制(18-20°C/蓝光);notes 从~99 字"导演提示"变成 150-170 字**逐字讲稿**+暖心收尾。reseed 覆盖生效、validate ok。**遗留**:页数(5)/条数(3)模型仍较顽固(LLM steering 上限),但每页内容厚度是质变。
+- **Phase 8 · 资料/上下文输入（喂料 → 内容 grounded 变厚）— 完成 ✅**(用户指出原"上传 PDF"是占位)
+  - **原状**:输入页「可粘贴资料/上传 PDF」是 mock 占位;真实生成只收主题文本;连篇幅/受众/语气也被丢。
+  - **粘贴 + 上传**:`InputScreen` 加资料 textarea(聚焦展开）+「＋上传 PDF/文本」按钮。PDF 走后端 `POST /api/extract`(pypdf 抽文本,截断 20k);txt/md 前端 `file.text()` 本地读;合并进 material,显示「已附 N 字」。
+  - **接真**:`agent.composeBrief(topic, {len,aud,tone,material})` 把主题+篇幅/受众/语气+资料拼成结构化消息(资料块标注"请吸收进 Context Pack 作为内容来源");`startRun`/`startFromInput` 透传。篇幅/受众/语气不再被丢。
+  - `recipe_api` 加 `POST /extract`(pdf→pypdf / 其它→utf-8);`vite.config` 加 `/api/extract` 代理。
+  - **验证(真生成)**:塞带独特标记的资料(格里芬2013 glymphatic/60%/90分钟/标记ZX9)→ `project_brief.md`、`context_pack.md` 完整吸收(含 ZX9，并列为"数据准确呈现"要求)、`outline.md` 围绕资料长出页面(「Glymphatic 夜间清洗系统…60%」「按 90 分钟倍数设闹钟」)且自然到 11 项。/extract 对真 PDF 抽出 577 字。证明"喂料=grounded 变厚"正路打通。`vite build` 通过。
 - **后续可选**:① Phase 4b-3 可编辑版 PPTX(移植 PPTAgent html2pptx,Node+pptxgenjs,接受富 CSS 主题保真退化)② Electron 桌面版(双击启动,后期)③ 出图路径(AI 配图,需图片 backend key)。**核心 MVP(生成→交互→预览→导出 PDF/PNG/PPTX/HTML→单机 Docker)已闭环。**
 
 ## 护栏自检

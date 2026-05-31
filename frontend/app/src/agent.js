@@ -27,9 +27,22 @@ export function respondInterrupt(stream, message) {
   stream.submit(null, { command: { resume: { decisions: [{ type: 'respond', message: String(message) }] } } })
 }
 
-export function startRun(stream, topic) {
+// 把主题 + 篇幅/受众/语气 + 参考资料拼成结构化消息（skill 的 Intake/Context Pack 会吸收）
+export function composeBrief(topic, opts = {}) {
+  const lines = [String(topic || '').trim()]
+  const meta = []
+  if (opts.len) meta.push('篇幅：' + opts.len)
+  if (opts.aud) meta.push('受众：' + opts.aud)
+  if (opts.tone) meta.push('语气：' + opts.tone)
+  if (meta.length) lines.push(meta.join('　'))
+  const mat = (opts.material || '').trim()
+  if (mat) lines.push('\n【参考资料 · 请吸收进 Context Pack 作为内容来源，引用其中的事实/数据/例子】\n' + mat)
+  return lines.join('\n')
+}
+
+export function startRun(stream, topic, opts = {}) {
   stream.submit(
-    { messages: [{ type: 'human', content: topic }] },
+    { messages: [{ type: 'human', content: composeBrief(topic, opts) }] },
     { config: { recursion_limit: 100 } }
   )
 }

@@ -102,6 +102,30 @@ async def revalidate(request):
     return JSONResponse(R.revalidate_all())
 
 
+# —— 资料抽取：上传 PDF/文本 → 纯文本，供 Context Pack 吸收 ——
+MAX_MATERIAL = 20000  # 截断上限，避免塞爆上下文
+
+async def extract_text(request):
+    data = await request.body()
+    if not data:
+        return JSONResponse({"error": "empty body"}, status_code=400)
+    ctype = request.headers.get("content-type", "")
+    text = ""
+    if "pdf" in ctype or data[:5] == b"%PDF-":
+        try:
+            import io
+            from pypdf import PdfReader
+            reader = PdfReader(io.BytesIO(data))
+            text = "\n".join((p.extract_text() or "") for p in reader.pages)
+        except Exception as e:  # noqa: BLE001
+            return JSONResponse({"error": f"pdf 解析失败：{e}"}, status_code=400)
+    else:
+        text = data.decode("utf-8", "ignore")
+    text = text.strip()
+    truncated = len(text) > MAX_MATERIAL
+    return JSONResponse({"chars": len(text), "truncated": truncated, "text": text[:MAX_MATERIAL]})
+
+
 # —— Run 产物（Phase 4a）：完成态真缩略图 + 内嵌预览 ——
 
 async def list_runs(request):
@@ -154,6 +178,7 @@ routes = [
     Route("/recipes", list_recipes, methods=["GET"]),
     Route("/recipes/active", set_active, methods=["POST"]),
     Route("/recipes/revalidate", revalidate, methods=["POST"]),
+    Route("/extract", extract_text, methods=["POST"]),
     Route("/recipes/import", import_recipe, methods=["POST"]),
     Route("/recipes/{id}", get_recipe, methods=["GET"]),
     Route("/recipes/{id}", save_recipe, methods=["PUT"]),

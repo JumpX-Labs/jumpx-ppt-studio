@@ -253,6 +253,12 @@ button{font-family:inherit}
 .compose .foot{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:13px;border-top:1px solid var(--hair-soft)}
 .compose .foot .spacer{flex:1}
 .hintn{font-family:var(--font-num);font-size:11.5px;color:var(--ink-4)}
+/* 资料区：第二个 textarea + 上传按钮 */
+.compose textarea.material{font-size:14px;min-height:0;height:0;opacity:0;padding:0;margin:0;overflow:hidden;transition:height .2s,opacity .2s,margin .2s;border-top:1px dashed transparent}
+.compose:focus-within textarea.material,.compose textarea.material:not(:placeholder-shown){height:74px;opacity:1;margin-top:10px;padding-top:10px;border-top-color:var(--hair-soft)}
+.attach{font-family:var(--font-cn);font-size:12.5px;color:var(--ink-2);background:var(--paper-2);border:1px solid var(--hair);border-radius:9px;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.attach:hover{border-color:var(--ink-4)}
+.attach:disabled{opacity:.6;cursor:default}
 .cta{font-family:var(--font-cn);font-size:14.5px;font-weight:500;border:0;border-radius:11px;padding:12px 22px;background:var(--pine);color:#fff;cursor:pointer;display:flex;align-items:center;gap:9px;transition:.15s}
 .cta:hover{background:var(--pine-deep)}
 .cta svg{width:17px;height:17px}
