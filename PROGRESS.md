@@ -173,7 +173,13 @@
   - `recipe_api.py` 加路由:`GET /runs`、`GET /runs/{id}/plan`、`GET /runs/{id}/view`(FileResponse text/html)。`vite.config` 加 `/api/runs`→:2025 代理。
   - `agent.js` 加 `findRunId`(从产物路径 `/runs/<id>/index.html` 抽 id);`LiveWorkbench` 完成后 `fetch /api/runs/{id}/plan` 拿真 pages → 胶片**真页标题**缩略图,done 卡内嵌 `<iframe src=/api/runs/{id}/view>` **预览生成的 deck**(可翻页)+「新标签打开↗」。
   - **验证(浏览器·真生成)**:完成态 iframe 渲染出 teaching-clean 封面页(标题"你以为的睡眠常识…"、可翻页 ‹1/5›),胶片 5 个缩略图带真标题(你以为…/睡眠到底…/三个误解/今晚小行动/重新认识自己)。`vite build` 通过。
-- **下一步 · Phase 4b · 导出 PDF/图片/PPTX(需拍板:依赖 playwright+chromium ~150MB & PPTX 是「图片忠实版」还是「python-pptx 可编辑版」)。HTML 导出已天然具备(=产物 index.html)。然后 Phase 5 打包单机应用。**
+- **Phase 4b · 导出调研 + PDF/PNG — 完成 ✅**
+  - **调研**(用户给的 9 个开源项目,clone 进 `.export-research/` gitignore,5 个并行 agent 拆解):纪要见 `EXPORT_RESEARCH.md`。核心结论:① PDF/PNG 已解决——全用「无头 Chromium 渲染 HTML → page.pdf()/screenshot()」,保真 100%;② PPTX「忠实 vs 可编辑」是同一管线两档,可编辑版(presenton/PPTAgent html2pptx/ALLWEONE)在富 CSS 主题上必然有损且数千行;③ LibreOffice 不需要。
+  - **决策(用户拍板)**:PPTX 走**图片忠实版优先**(留 4b-2);本阶段 **4b-1 先只 PDF + PNG**。
+  - **实现 4b-1**:`backend/export_deck.py`——Playwright+Chromium 渲染真实 `index.html`。PDF:注入打印 CSS(html/body 去 `overflow:hidden`、deck 改 block、每页 1280×720 + `break-after`)→ `page.pdf()` 矢量 5 页。PNG:视口 1280×720@2x,逐页 `transform` 定位整屏截图 → zip。`recipe_api` 加 `GET /runs/{id}/export/pdf|png`;`vite.config` 已代理 `/api/runs`。前端 `App.jsx` live 完成态「导出▾」下拉:PDF/图片PNG(zip,download)/HTML 网页。
+  - **依赖**:`requirements.txt` 加 `playwright>=1.40`(装后需 `playwright install chromium`,单机一次)。
+  - **验证(真生成两次·浏览器+HTTP)**:PDF 5 页矢量、复杂版式(三栏卡片/2×2 对比)100% 保真(Read 渲染确认);PNG 5 张 2x 清晰;新 run(sleep-rethinking)现渲染 200;导出下拉菜单链接正确、端到端下载通。越界 id→404。`vite build` 通过。
+- **下一步 · Phase 4b-2(可选)· PPTX 图片忠实版**(每页截图铺满 → python-pptx `add_picture`,搭在现有 PNG 截图链路上 ~30 行)。**或直接 Phase 5 · 打包单机应用**(把三服务 + chromium 收成一键启动)。
 
 ## 护栏自检
 - [x] 未 git commit / push。

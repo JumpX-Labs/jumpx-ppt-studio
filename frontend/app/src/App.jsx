@@ -3,7 +3,7 @@ import { InputScreen, OutlineScreen, TemplateScreen, OutputScreen } from './scre
 import { Workbench } from './Workbench.jsx'
 import { RecipeHub } from './Recipe.jsx'
 import { DECK, TEMPLATES } from './data.js'
-import { useAgent, startRun, readInterrupt, runFinished, findOutputPath } from './agent.js'
+import { useAgent, startRun, readInterrupt, runFinished, findOutputPath, findRunId } from './agent.js'
 import { LiveWorkbench } from './LiveWorkbench.jsx'
 
 // —— App：状态机 + 顶栏阶段条 + 路由 + 明暗 Tweak + 规划过渡 + 导出菜单 ——
@@ -60,6 +60,7 @@ function App() {
   const intr = live ? readInterrupt(agent) : null;
   const finished = live ? runFinished(agent) : false;
   const indexHtml = live ? !!findOutputPath(agent) : false;
+  const runId = live ? findRunId(agent) : null;
   function liveActiveIndex() {
     if (finished) return 4;
     if (intr) return intr.name === 'confirm_outline' ? 1 : intr.name === 'choose_template' ? 2 : intr.name === 'choose_render_mode' ? 3 : 1;
@@ -84,10 +85,22 @@ function App() {
     const darkBtn = <button className="iconbtn" title="明 / 暗" onClick={() => setDark(d => !d)}>{dark ? sun : moon}</button>;
     const skillsBtn = <button className="iconbtn" title="配方 / Skills" onClick={() => setSkillsOpen(true)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7h10M4 12h7M4 17h10" /><circle cx="18" cy="7" r="2.2" /><circle cx="14" cy="12" r="2.2" /><circle cx="18" cy="17" r="2.2" /></svg></button>;
     if (live) return (
-      <div className="tb-right">{skillsBtn}{darkBtn}
-        {indexHtml ? <button className="btn primary">导出 ▾</button>
+      <div className="tb-right" style={{ position: 'relative' }}>{skillsBtn}{darkBtn}
+        {finished && runId ? <button className="btn primary" onClick={() => setExportOpen(o => !o)}>导出 ▾</button>
           : agent.isLoading ? <button className="btn" onClick={() => agent.stop()}>停止</button> : null}
         <div className="avatar">林</div>
+        {exportOpen && finished && runId && (
+          <div className="export-pop">
+            {[['PDF', '矢量 · 每页一张 · 便于打印/提交', `/api/runs/${runId}/export/pdf`, false],
+              ['图片 PNG', '逐页高清 · 打包 zip', `/api/runs/${runId}/export/png`, true],
+              ['HTML 网页', '可翻页 · 在线分享', `/api/runs/${runId}/view`, false]].map(([t, s, href, dl]) => (
+              <a className="ei" key={t} href={href} target="_blank" rel="noreferrer" download={dl || undefined} onClick={() => setExportOpen(false)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
+                <div><b>{t}</b><div className="sub">{s}</div></div>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     );
     if (screen === 'input') return <div className="tb-right">{skillsBtn}{darkBtn}<div className="avatar">林</div></div>;

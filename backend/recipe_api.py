@@ -18,6 +18,7 @@ from starlette.routing import Route
 
 import recipes as R
 import runs as RUN
+import export_deck as EXPORT
 
 R.ensure_recipes()
 
@@ -121,6 +122,24 @@ async def run_view(request):
     return FileResponse(p, media_type="text/html")
 
 
+# —— 导出（Phase 4b-1）：PDF + 逐页 PNG（Playwright+Chromium 渲染真实 HTML）——
+
+async def export_pdf(request):
+    rid = request.path_params["id"]
+    p = await EXPORT.export_pdf(rid)
+    if p is None:
+        return JSONResponse({"error": "not found"}, status_code=404)
+    return FileResponse(p, filename=f"{rid}.pdf", media_type="application/pdf")
+
+
+async def export_png(request):
+    rid = request.path_params["id"]
+    p = await EXPORT.export_png_zip(rid)
+    if p is None:
+        return JSONResponse({"error": "not found"}, status_code=404)
+    return FileResponse(p, filename=f"{rid}-png.zip", media_type="application/zip")
+
+
 routes = [
     Route("/recipes", list_recipes, methods=["GET"]),
     Route("/recipes/active", set_active, methods=["POST"]),
@@ -133,6 +152,8 @@ routes = [
     Route("/runs", list_runs, methods=["GET"]),
     Route("/runs/{id}/plan", run_plan, methods=["GET"]),
     Route("/runs/{id}/view", run_view, methods=["GET"]),
+    Route("/runs/{id}/export/pdf", export_pdf, methods=["GET"]),
+    Route("/runs/{id}/export/png", export_png, methods=["GET"]),
 ]
 
 app = Starlette(routes=routes)

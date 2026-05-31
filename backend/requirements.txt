@@ -3,3 +3,6 @@ deepagents>=0.6.7
 langgraph-cli[inmem]>=0.2.0
 langchain-openai>=0.3.0
 python-dotenv>=1.0.0
+# 导出（Phase 4b-1）：无头 Chromium 渲染 HTML deck → PDF/PNG。
+# 装完需再跑一次：`playwright install chromium`
+playwright>=1.40

@@ -421,7 +421,7 @@ button{font-family:inherit}
 
 /* 导出菜单 */
 .export-pop{position:absolute;top:54px;right:22px;background:var(--paper-1);border:1px solid var(--hair);border-radius:12px;box-shadow:var(--shadow-card);padding:6px;z-index:40;width:230px;animation:pop .2s ease}
-.export-pop .ei{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-size:13.5px}
+.export-pop .ei{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-size:13.5px;color:inherit;text-decoration:none}
 .export-pop .ei:hover{background:var(--paper-2)}
 .export-pop .ei svg{width:17px;height:17px;color:var(--pine)}
 .export-pop .ei .sub{font-size:11px;color:var(--ink-3);margin-top:1px}

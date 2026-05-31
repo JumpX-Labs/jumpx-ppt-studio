@@ -36,3 +36,6 @@ ui/
 frontend/app/node_modules/
 frontend/app/dist/
 frontend/app/.vite/
+
+# 导出方案调研：外部 repo 浅克隆，不入库
+.export-research/

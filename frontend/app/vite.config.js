@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: '127.0.0.1',
     port: 5180,
     // 配方 API（Starlette :2025）/ LangGraph server（:2024）反代，避免 CORS
     proxy: {
