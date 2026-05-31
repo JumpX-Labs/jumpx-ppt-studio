@@ -4,7 +4,7 @@
 
 ---
 
-## 当前状态：MVP 闭环 ✅ ｜ 阶段 1–3 ✅ ｜ Phase 3a/3b ✅（专属前端接真 LangGraph 流）｜ Phase 4a 内嵌预览 ✅ ｜ Phase 4b 导出 PDF/PNG/PPTX ✅ ｜ Phase 5 Docker 单机打包 ✅（真起容器验证：UI/配方/langgraph 经 :5180 全通）
+## 当前状态：MVP 闭环 ✅ ｜ 阶段 1–3 ✅ ｜ Phase 3a/3b ✅（专属前端接真 LangGraph 流）｜ Phase 4a 内嵌预览 ✅ ｜ Phase 4b 导出 PDF/PNG/PPTX ✅ ｜ Phase 5 Docker 单机打包 ✅ ｜ Phase 6 现场演示(present，借鉴 Slidev：舞台+overview+演讲者视图+双窗同步) ✅
 
 最后更新：2026-05-31
 
@@ -191,6 +191,15 @@
   - `docker/entrypoint.sh`:从环境变量合成 `.env`(langgraph.json 用 `env:.env`,镜像内无该文件)→ 跑 `selfcheck.py` → 起 `langgraph dev :2024`(`--allow-blocking --no-browser`)+ `recipe_api :2025` + 前台 `vite :5180`(`--host 0.0.0.0`)。
   - `docker-compose.yml`:`build .`、`5180:5180`、`env_file backend/.env`、只读挂载同级 `../jumpx-ppt-slides-skill`→`/skill-src`(`JX_SKILL_SRC` 覆盖)、命名卷 `jumpx-workspace` 持久化 runs/recipes。`setup_workspace.SKILL_SRC` 改为可被 `JX_SKILL_SRC` 覆盖。`.dockerignore` 瘦身上下文。
   - **验证(真起容器)**:`docker compose up` → 自检 5 项全过、三服务起齐;`http://localhost:5180`→200、`/api/recipes` 返回配方、`/lg/ok`→`{"ok":true}`、`/lg/assistants/search`→`slides_agent` 已注册。整条「UI→配方API→langgraph」代理链经唯一对外端口 5180 通。启动文档见 `RUN.md`「方式 A」。
+- **Phase 6 · 现场演示(present)模式 — 完成 ✅**(借鉴 Slidev,用户上课需求)
+  - 调研 `jumpx_slidev` 的 `@slidev/client`:借鉴①固定画布+scale ②键盘表 ③**BroadcastChannel 双窗同步(防回声)** ④演讲者视图(当前+下一页+notes+计时器) ⑤overview。不引 Vue,纯 JS/React。
+  - `frontend/app/src/Present.jsx`:
+    - **观众舞台 `PresentStage`**:全屏 deck(同源 iframe 直接驱动 `#deck` transform 翻页、隐藏 deck 自带控件)。键盘:→/Space/PageDown/↓=下页,←/PageUp/↑=上页,Home/End,数字+Enter 跳页,f 全屏,o 总览,p 演讲者,Esc 退出。底部浮动控制栏 + 进度条。重载自恢复到当前页。
+    - **overview 总览**:全屏网格,每格真实 deck 缩略(scale),当前页高亮,点击/跳页。
+    - **演讲者视图 `PresenterView`**(独立标签 `?present=<id>&role=presenter`):当前页 + 下一页预览(real deck mini)+ **真 speaker_notes**(读 `/api/runs/{id}/plan`)+ 计时器(暂停/重置)。
+    - **双窗同步**:`BroadcastChannel('jumpx-present-<id>')`,消息带 `sender(role+id)` 防回声,presenter 进入发 `hello`、stage 回 `state` 握手;翻页广播 `goto`。
+  - `App.jsx`:URL `?present=<id>[&role=presenter]` 路由到舞台/演讲者;完成态加「▶ 演示」按钮(`setPresentId`)。`proto.css` 加 present 全套样式。
+  - **验证(浏览器·真 run)**:舞台全屏全保真(内容页四宫格正确)、键盘连按修复(2×→ 准确 +2)、overview 5 真缩略图+当前绿框、演讲者视图当前+下一页+真 notes+计时器、BroadcastChannel 点下一页发出 `{goto,page,sender}`。`vite build` 通过。
 - **后续可选**:① Phase 4b-3 可编辑版 PPTX(移植 PPTAgent html2pptx,Node+pptxgenjs,接受富 CSS 主题保真退化)② Electron 桌面版(双击启动,后期)③ 出图路径(AI 配图,需图片 backend key)。**核心 MVP(生成→交互→预览→导出 PDF/PNG/PPTX/HTML→单机 Docker)已闭环。**
 
 ## 护栏自检

@@ -5,6 +5,7 @@ import { RecipeHub } from './Recipe.jsx'
 import { DECK, TEMPLATES } from './data.js'
 import { useAgent, startRun, readInterrupt, runFinished, findOutputPath, findRunId } from './agent.js'
 import { LiveWorkbench } from './LiveWorkbench.jsx'
+import { PresentStage, PresenterView } from './Present.jsx'
 
 // —— App：状态机 + 顶栏阶段条 + 路由 + 明暗 Tweak + 规划过渡 + 导出菜单 ——
 // 依赖 Screens / Workbench、proto.css
@@ -53,6 +54,12 @@ function App() {
   const [skillsOpen, setSkillsOpen] = useStateA(false);
   const [live, setLive] = useStateA(false);   // true=接真 LangGraph 生成流
   const [exporting, setExporting] = useStateA(null);   // 正在导出的格式（渲染需几秒，给反馈）
+
+  // 现场演示：URL ?present=<id>[&role=presenter] 或 「演示」按钮进入
+  const _params = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const presentParam = _params.get('present');
+  const presenterRole = _params.get('role') === 'presenter';
+  const [presentId, setPresentId] = useStateA(presentParam && !presenterRole ? presentParam : null);
 
   const agent = useAgent();
   const tplName = (TEMPLATES.find(t => t.id === tpl) || {}).name || '素白';
@@ -108,7 +115,10 @@ function App() {
     const skillsBtn = <button className="iconbtn" title="配方 / Skills" onClick={() => setSkillsOpen(true)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7h10M4 12h7M4 17h10" /><circle cx="18" cy="7" r="2.2" /><circle cx="14" cy="12" r="2.2" /><circle cx="18" cy="17" r="2.2" /></svg></button>;
     if (live) return (
       <div className="tb-right" style={{ position: 'relative' }}>{skillsBtn}{darkBtn}
-        {finished && runId ? <button className="btn primary" onClick={() => setExportOpen(o => !o)}>导出 ▾</button>
+        {finished && runId ? <>
+          <button className="btn" onClick={() => setPresentId(runId)}>▶ 演示</button>
+          <button className="btn primary" onClick={() => setExportOpen(o => !o)}>导出 ▾</button>
+        </>
           : agent.isLoading ? <button className="btn" onClick={() => agent.stop()}>停止</button> : null}
         <div className="avatar">林</div>
         {exportOpen && finished && runId && (
@@ -159,6 +169,13 @@ function App() {
       </div>
     );
   }
+
+  // 演讲者视图（独立标签）/ 观众舞台（全屏覆盖）——优先于常规界面
+  if (presentParam && presenterRole) return <PresenterView runId={presentParam} />;
+  if (presentId) return <PresentStage runId={presentId} onExit={() => {
+    setPresentId(null);
+    if (presentParam && typeof window !== 'undefined') window.history.replaceState({}, '', window.location.pathname);
+  }} />;
 
   return (
     <div className="app" data-mode={dark ? 'dark' : undefined}>
