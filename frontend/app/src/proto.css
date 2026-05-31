@@ -558,3 +558,26 @@ button{font-family:inherit}
 /* 滚动条 */
 .cop-scroll::-webkit-scrollbar,.tree-body::-webkit-scrollbar,.board::-webkit-scrollbar,.tpl-grid::-webkit-scrollbar,.strip::-webkit-scrollbar,.center-wrap::-webkit-scrollbar,.tpl-preview::-webkit-scrollbar{width:8px;height:8px}
 .cop-scroll::-webkit-scrollbar-thumb,.tree-body::-webkit-scrollbar-thumb,.board::-webkit-scrollbar-thumb,.tpl-grid::-webkit-scrollbar-thumb,.strip::-webkit-scrollbar-thumb,.center-wrap::-webkit-scrollbar-thumb,.tpl-preview::-webkit-scrollbar-thumb{background:var(--hair);border-radius:4px}
+
+/* ============================================================
+   实时工作台 · 交互点覆盖层（LiveWorkbench）
+   ============================================================ */
+.live-overlay{position:absolute;inset:0;display:grid;place-items:center;padding:30px;z-index:5}
+.ov-card{background:var(--paper-1);border:1px solid var(--hair);border-radius:14px;box-shadow:var(--shadow-card);padding:24px 26px;max-width:560px;width:100%}
+.ov-card.wide{max-width:760px}
+.ov-h{font-size:17px;font-weight:700;margin-bottom:14px}
+.ov-h span{font-weight:400;font-size:12.5px;color:var(--ink-3);margin-left:8px}
+.ov-outline{background:var(--paper-0);border:1px solid var(--hair);border-radius:10px;padding:14px;font-family:var(--font-mono);font-size:12px;line-height:1.6;color:var(--ink-2);max-height:300px;overflow:auto;white-space:pre-wrap}
+.ov-acts{display:flex;gap:10px;margin-top:16px}
+.ov-tpls{display:flex;flex-wrap:wrap;gap:10px}
+.ov-tpl{font-size:13px;border:1px solid var(--hair);background:var(--paper-0);border-radius:10px;padding:11px 15px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.ov-tpl:hover{border-color:var(--ink-4)}
+.ov-tpl.rec{border-color:var(--pine);background:var(--pine-soft);color:var(--pine-deep);font-weight:600}
+.ov-tpl .star{color:var(--pine)}
+.ov-modes{display:flex;gap:14px}
+.ov-mode{flex:1;border:1px solid var(--hair);background:var(--paper-0);border-radius:12px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:6px}
+.ov-mode:hover{border-color:var(--ink-4)}
+.ov-mode.rec{border-color:var(--pine-line);background:var(--pine-soft)}
+.ov-mode b{font-size:15px}
+.ov-mode span{font-size:12px;color:var(--ink-3)}
+.ring{display:inline-block;width:15px;height:15px;border-radius:50%;border:2px solid var(--pine-soft);border-top-color:var(--pine);animation:spin .8s linear infinite;vertical-align:middle}

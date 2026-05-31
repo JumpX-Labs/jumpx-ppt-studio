@@ -4,7 +4,7 @@
 
 ---
 
-## 当前状态：阶段 1 ✅ ｜ 阶段 2 ✅ ｜ 阶段 3 ✅（本轮 DoD 达成）
+## 当前状态：阶段 1 ✅ ｜ 阶段 2 ✅ ｜ 阶段 3 ✅ ｜ Phase 3a/3b-1/3b-2/3b-3 ✅（专属前端已接真 LangGraph 生成流，三交互点 + resume + 完成态浏览器验证通过）
 
 最后更新：2026-05-31
 
@@ -160,7 +160,15 @@
   - manifest 增展示字段;`update_manifest` 白名单;save 分流(展示字段→manifest / 可改文件→save_editable / 锁定→拒)。
   - 验证(浏览器+真后端):画廊从 API 加载、fork→编辑器真数据、保存 PUT→校验 ok。
   - **本地起法**:① `cd backend && .venv/bin/uvicorn recipe_api:app --port 2025`;② `cd frontend/app && npm run dev`(:5180,/api 代理到 2025)。
-- **下一步 · Phase 3b-3 · 生成流接 LangGraph(最大块)**:`@langchain/langgraph-sdk` useStream 连 :2024;App.jsx 从 mock 驱动改为 stream 驱动——todos/流式/files、三交互点 interrupt → 主舞台覆盖层(大纲编辑器/模板网格/同页两版)+ resume。需真生成验证(用户 Ark key)。然后 Phase 4 导出/Phase 5 打包。
+- **Phase 3b-3 · 生成流接 LangGraph(最大块)— 完成 ✅**
+  - `frontend/app/src/agent.js`:`useStream({apiUrl: origin+'/lg', assistantId:'slides_agent'})`(apiUrl 必须绝对地址,否则 SDK 抛 Invalid URL);`readInterrupt`(解析 `interrupt.value.action_requests[0]`)/`respondInterrupt`(submit `{command:{resume:{decisions:[{type:'respond',message}]}}}`)/`startRun`/`findOutputPath`/`findPageCount`/`runFinished`。
+  - `LiveWorkbench.jsx`:流驱动工作台——真 todos(completed/in_progress/pending→done/doing/todo)、活动流(从 messages 抽 tool_calls)、三交互点 `Overlay`:`confirm_outline`(真大纲 pre + 确认/重拟)、`choose_template`(agent 真推荐高亮 ★ + 7 预设网格)、`choose_render_mode`(HTML/AI 图两卡)。
+  - `App.jsx`:`live` 模式从 stream 派生阶段条/项目名/导出按钮;`startFromInput` 触发真生成。
+  - **完成态检测修复**:`build_slides_html` 直写真实磁盘(不走虚拟 `write_file`),故 `stream.values.files` 无 index.html → 改用「最后 AI 文本里的 index.html 路径 + todos 全完成」判定 `runFinished`,页数从「N 页」文本解析。
+  - **验证(浏览器,真 Ark 生成,主题=重新认识睡眠)**:输入→流式 todos/活动→`confirm_outline` 覆盖层(真大纲)→resume→`choose_template` 覆盖层(agent 真推荐 teaching-clean/sketch-notes/editorial-magazine)→选 teaching-clean→`choose_render_mode` 覆盖层→选 HTML→渲染→✅完成(8/8 todos、产物 `/runs/sleep-sharing/index.html` 15.8KB/5 页、阶段条到完成、导出按钮出现)。三交互点 + resume + 完成态全程截图确认。前端 `vite build` 通过。
+  - **本地起法**:① `cd backend && .venv/bin/langgraph dev --port 2024`(注册 `slides_agent`);② `cd backend && .venv/bin/uvicorn recipe_api:app --port 2025`;③ `cd frontend/app && npm run dev`(:5180,/lg→2024、/api→2025)。
+  - **遗留(归 Phase 4)**:胶片缩略图的逐页标题需后端读 run 的 `source/slide_plan.json`(FilesystemBackend 模式 `state.files` 不镜像磁盘)——和导出/run 文件访问一起做;当前仅按页数显示占位缩略图。
+- **下一步 · Phase 4 · 导出(PPTX/PDF/图片)+ run 文件访问(后端读 slide_plan/index.html → 胶片真缩略图 + 内嵌预览)。然后 Phase 5 打包单机应用。**
 
 ## 护栏自检
 - [x] 未 git commit / push。
