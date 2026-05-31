@@ -44,11 +44,11 @@ async def save_recipe(request):
             R.save_editable(rid, rel, content)
         except ValueError:
             rejected.append(rel)
-    if body.get("name"):
-        R.rename(rid, body["name"])
-    if "density" in body:
-        R.set_density(rid, body["density"])
-    return JSONResponse({"validate": R.validate_recipe(rid), "rejected_locked": rejected})
+    meta = {k: body[k] for k in R.META_FIELDS if k in body}
+    if meta:
+        R.update_manifest(rid, meta)
+    return JSONResponse({"validate": R.validate_recipe(rid), "rejected_locked": rejected,
+                         "manifest": R.read_manifest(rid)})
 
 
 async def fork_recipe(request):

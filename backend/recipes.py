@@ -88,6 +88,20 @@ def ensure_recipes() -> None:
         set_active("default")
 
 
+# manifest 里允许 API/编辑器更新的展示字段（白名单；不含 id/contract_version 等不可改项）
+META_FIELDS = ["name", "persona", "domain", "voice", "tag", "density", "narrative", "absorb"]
+
+
+def update_manifest(rid: str, fields: dict) -> dict:
+    """只更新白名单展示字段（供编辑器保存）。"""
+    m = read_manifest(rid)
+    for k, v in fields.items():
+        if k in META_FIELDS:
+            m[k] = v
+    write_manifest(rid, m)
+    return m
+
+
 def _seed_from_base(rid: str, name: str, *, author: str = "builtin") -> str:
     dest = recipe_dir(rid)
     if dest.exists():
@@ -97,6 +111,8 @@ def _seed_from_base(rid: str, name: str, *, author: str = "builtin") -> str:
     write_manifest(rid, {
         "id": rid, "name": name, "version": "1", "author": author,
         "contract_version": CONTRACT_VERSION, "editable": EDITABLE, "density": 1,
+        "persona": "懂通用清单与图表 · 写得干练清晰 · 厚薄适中",
+        "domain": ["清单", "图表", "概念"], "voice": "干练清晰", "tag": "内置 · 推荐",
     })
     return rid
 
@@ -135,7 +151,8 @@ def fork(rid: str, new_name: str | None = None) -> str:
     shutil.copytree(src, recipe_dir(new_id), ignore=_IGNORE)
     _ensure_background(new_id)
     m = read_manifest(rid)
-    m.update({"id": new_id, "name": nm + " · 副本", "author": "user", "contract_version": CONTRACT_VERSION})
+    m.update({"id": new_id, "name": nm + " · 副本", "author": "user",
+              "contract_version": CONTRACT_VERSION, "tag": "我的"})
     write_manifest(new_id, m)
     return new_id
 
@@ -192,6 +209,8 @@ def absorb(uploaded_dir: str, name: str | None = None) -> tuple[str, list[str]]:
         "id": new_id, "name": um.get("name", name or "导入的配方"),
         "version": um.get("version", "1"), "author": um.get("author", "imported"),
         "contract_version": CONTRACT_VERSION, "editable": EDITABLE, "density": um.get("density", 1),
+        "persona": um.get("persona", "导入的配方"), "domain": um.get("domain", []),
+        "voice": um.get("voice", ""), "tag": "已导入",
     })
     return new_id, ignored
 
