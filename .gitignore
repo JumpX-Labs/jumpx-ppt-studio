@@ -31,3 +31,8 @@ demo-dist/
 
 # vendored 的 deep-agents-ui clone（自带 .git，可重新 clone）
 ui/
+
+# 前端构建
+frontend/app/node_modules/
+frontend/app/dist/
+frontend/app/.vite/
