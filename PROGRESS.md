@@ -240,7 +240,12 @@
   - **spike 验证**(`spike_html.py`):同一份 slide_plan+style_lock,让 ark-code-latest 直接写整套 HTML,渲染对比模板版——**质量碾压**(封面有气场、内容页模型自绘睡眠周期柱状图、用对绿色 token、杂志式版面)。
   - **重构**(`ai_render.py`):`render_deck_html` 让模型按 slide_plan+style_lock(设计 token)直接写整套自包含 HTML;**硬契约**保留 `#deck/.slide/translateX` 外壳(演示/导出照常);结构校验(slide 数匹配)+1 次修复;失败回退模板。接成 `build_slides_html` 主路径(`JX_AI_RENDER=1` 默认开,模板留回退)。
   - **验证(真生成)**:`build_slides_html('sleep-redesign')` → AI 版 22KB,封面居中极简、P03 模型自绘周期柱状图+图标卡片、零溢出;export `_render_slide_pngs` 成功渲染 6 页(契约兼容)。**代价**:渲染步 +60–90s 模型调用(原模板近瞬时),换设计质量,用户优先质量。
-  - **遗留**:① 渲染→截图→自检溢出→修复回路(v1 只做结构校验,视觉溢出修复待加)② 逐页内容预览(下一步)。
+  - **遗留**:渲染→截图→自检溢出→修复回路(v1 只做结构校验,视觉溢出修复待加)。
+- **Phase 11 · 逐页内容预览 — 完成 ✅**(用户:生成前看不到每页具体内容)
+  - `agent.findRunSlug`:从任意消息的 `runs/<slug>/` 路径提取 slug(生成中即可拿到,早于 finish 的 findRunId)。
+  - `LiveWorkbench`:用 runSlug **生成中每 5s 轮询** `/api/runs/{slug}/plan`(slide_plan 写好前 404,写好后自动拾取);胶片缩略图变**可点**,点开 `PageDetail` 面板看该页完整内容(key_message + headline/sub + body 要点 + caption + speaker_notes + layout + 上/下页导航)。
+  - **验证**:findRunSlug 实测解析出 `sleep-reboot`;`/plan` 端点返回 pages(早验);构建通过。视觉:缩略图有 slide_plan 后即可点开(注:slide_plan 在 pipeline 里写得较晚,约渲染前)。
+  - **注**:更彻底的"渲染前审核 gate"(暂停让用户改逐页内容)需给 skill 加中断,属后续。
 - **后续可选**:① Phase 4b-3 可编辑版 PPTX(移植 PPTAgent html2pptx,Node+pptxgenjs,接受富 CSS 主题保真退化)② Electron 桌面版(双击启动,后期)③ 出图路径(AI 配图,需图片 backend key)。**核心 MVP(生成→交互→预览→导出 PDF/PNG/PPTX/HTML→单机 Docker)已闭环。**
 
 ## 护栏自检

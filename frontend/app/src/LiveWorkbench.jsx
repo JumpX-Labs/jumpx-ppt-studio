@@ -1,6 +1,6 @@
 // 实时工作台：由 LangGraph 流驱动（真 todos / 活动流 / 三交互点中断覆盖层 / 文件）。
 import React from 'react'
-import { readInterrupt, respondInterrupt, findOutputPath, runFinished, findPageCount, findRunId } from './agent.js'
+import { readInterrupt, respondInterrupt, findOutputPath, runFinished, findPageCount, findRunId, findRunSlug } from './agent.js'
 import { OutlineEditor } from './OutlineEditor.jsx'
 
 const REAL_PRESETS = ['teaching-clean', 'editorial-magazine', 'swiss-system', 'blueprint', 'sketch-notes', 'corporate', 'creator-social']
@@ -100,20 +100,28 @@ export function LiveWorkbench({ stream }) {
   const intr = readInterrupt(stream)
   const loading = stream.isLoading
   const runId = finished ? findRunId(stream) : null
+  const runSlug = runId || findRunSlug(stream)   // 生成中即可拿到，用于提前拉逐页内容
 
-  // 完成后从后端拉真 slide_plan（缩略图标题）；FilesystemBackend 模式下虚拟 files 不含它
+  // 从后端拉真 slide_plan（逐页内容）；生成中轮询直到有页，完成后再刷一次。
+  // FilesystemBackend 模式下虚拟 files 不含 slide_plan，所以靠后端读盘。
   const [runPlan, setRunPlan] = React.useState(null)
+  const msgCount = (stream.messages || []).length
   React.useEffect(() => {
-    if (!runId) { setRunPlan(null); return }
+    if (!runSlug) { setRunPlan(null); return }
     let alive = true
-    fetch(`/api/runs/${runId}/plan`).then(r => (r.ok ? r.json() : null)).then(d => { if (alive) setRunPlan(d) }).catch(() => { })
-    return () => { alive = false }
-  }, [runId])
+    const pull = () => fetch(`/api/runs/${runSlug}/plan`)
+      .then(r => (r.ok ? r.json() : null)).then(d => { if (alive && d) setRunPlan(d) }).catch(() => { })
+    pull()
+    // 生成中每 5s 轮询一次（slide_plan 写好前会 404）
+    const t = (!finished) ? setInterval(pull, 5000) : null
+    return () => { alive = false; if (t) clearInterval(t) }
+  }, [runSlug, finished, msgCount])
 
   const virtualPages = plan && Array.isArray(plan.pages) ? plan.pages : []
   const fetchedPages = runPlan && Array.isArray(runPlan.pages) ? runPlan.pages : []
   const pages = virtualPages.length ? virtualPages : fetchedPages
   const pageCount = pages.length || findPageCount(stream)
+  const [openPage, setOpenPage] = React.useState(null)   // 点缩略图看逐页内容
   const doneCount = todos.filter(t => t.st === 'done').length
   const lastText = (() => {
     const ai = [...(stream.messages || [])].reverse().find(m => (m.type === 'ai' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim())
@@ -177,10 +185,11 @@ export function LiveWorkbench({ stream }) {
         </div>
 
         <div className="film">
-          <div className="film-h"><span className="t">幻灯片</span><span className="c">{pageCount ? pageCount + ' 页' : '生成中'}</span></div>
+          <div className="film-h"><span className="t">幻灯片</span><span className="c">{pages.length ? pages.length + ' 页 · 点开看内容' : (pageCount ? pageCount + ' 页' : '生成中')}</span></div>
           <div className="strip">
             {(pages.length ? pages : Array.from({ length: pageCount || 6 })).map((p, i) => (
-              <div key={i} className={'thumb' + (pages.length ? '' : finished ? ' ready' : ' pending')}>
+              <div key={i} className={'thumb' + (pages.length ? ' has' : finished ? ' ready' : ' pending')}
+                onClick={() => pages.length && setOpenPage(i)} title={pages.length ? '点开看本页内容' : ''}>
                 <span className="tn">{String(i + 1).padStart(2, '0')}</span>
                 {pages.length
                   ? <div className="tmini" style={{ inset: '16px 8px 8px 8px', position: 'absolute', fontSize: 9, color: 'var(--ink-2)', lineHeight: 1.3, overflow: 'hidden' }}>{(p.page_title || p.title || '')}</div>
@@ -189,6 +198,36 @@ export function LiveWorkbench({ stream }) {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+      {openPage !== null && pages[openPage] && <PageDetail page={pages[openPage]} n={openPage + 1} total={pages.length} onClose={() => setOpenPage(null)} onNav={(d) => setOpenPage(Math.max(0, Math.min(pages.length - 1, openPage + d)))} />}
+    </div>
+  )
+}
+
+// 逐页内容查看（点缩略图弹出）：标题 + 要点 + 演讲备注
+function PageDetail({ page, n, total, onClose, onNav }) {
+  const t = page.on_slide_text || {}
+  const body = t.body || []
+  return (
+    <div className="pd-mask" onClick={onClose}>
+      <div className="pd" onClick={e => e.stopPropagation()}>
+        <div className="pd-head">
+          <span className="pd-n">{String(n).padStart(2, '0')} / {total}</span>
+          <b className="pd-title">{page.page_title || t.headline || ''}</b>
+          {page.layout_type && <span className="pd-layout">{page.layout_type}</span>}
+          <span className="pd-sp" />
+          <button className="iconbtn" onClick={() => onNav(-1)} disabled={n <= 1}>‹</button>
+          <button className="iconbtn" onClick={() => onNav(1)} disabled={n >= total}>›</button>
+          <button className="iconbtn" onClick={onClose}>✕</button>
+        </div>
+        <div className="pd-body">
+          {page.key_message && <div className="pd-key">{page.key_message}</div>}
+          {(t.headline && t.headline !== page.page_title) && <div className="pd-h2">{t.headline}</div>}
+          {t.sub_headline && <div className="pd-sub">{t.sub_headline}</div>}
+          {body.length > 0 && <ul className="pd-bullets">{body.map((b, i) => <li key={i}>{b}</li>)}</ul>}
+          {t.caption && <div className="pd-cap">{t.caption}</div>}
+          {page.speaker_notes && <div className="pd-notes"><div className="pd-notes-h">演讲备注</div>{page.speaker_notes}</div>}
         </div>
       </div>
     </div>

@@ -71,6 +71,18 @@ export function findRunId(stream) {
   return m ? m[1] : null
 }
 
+// run slug：从任意消息里的 runs/<slug>/ 路径提取（生成中即可拿到，早于 findRunId）
+export function findRunSlug(stream) {
+  const msgs = (stream && stream.messages) || []
+  for (const m of [...msgs].reverse()) {
+    let s = ''
+    try { s = typeof m.content === 'string' ? m.content : JSON.stringify(m) } catch { s = '' }
+    const mm = s.match(/runs[\\/]+([A-Za-z0-9_-]+)[\\/]/)
+    if (mm) return mm[1]
+  }
+  return null
+}
+
 // 页数：优先虚拟 slide_plan.json，回退从 AI 文本里抓「N 页」
 export function findPageCount(stream) {
   const files = (stream && stream.values && stream.values.files) || {}
