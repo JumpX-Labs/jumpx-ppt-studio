@@ -241,6 +241,15 @@
   - **重构**(`ai_render.py`):`render_deck_html` 让模型按 slide_plan+style_lock(设计 token)直接写整套自包含 HTML;**硬契约**保留 `#deck/.slide/translateX` 外壳(演示/导出照常);结构校验(slide 数匹配)+1 次修复;失败回退模板。接成 `build_slides_html` 主路径(`JX_AI_RENDER=1` 默认开,模板留回退)。
   - **验证(真生成)**:`build_slides_html('sleep-redesign')` → AI 版 22KB,封面居中极简、P03 模型自绘周期柱状图+图标卡片、零溢出;export `_render_slide_pngs` 成功渲染 6 页(契约兼容)。**代价**:渲染步 +60–90s 模型调用(原模板近瞬时),换设计质量,用户优先质量。
   - **遗留**:渲染→截图→自检溢出→修复回路(v1 只做结构校验,视觉溢出修复待加)。
+- **Phase 10b · 把版式自主性改进 Skill 本体(可独立发布)— 完成 ✅**(用户:Skill 单独发布,版式能力须在 Skill 里)
+  - 澄清:Phase 10 只改了 webapp 代码(ai_render/slide_tools),**Skill 本体没动**——独立运行仍机械模板。本轮在**上游 Skill** 修。
+  - 改上游 `jumpx-ppt-slides-skill/skills/ai-slide-producer/`:
+    - `references/08-web-renderer.md` 重写:**主路径=模型直接写 HTML**(含硬契约 `#deck/.slide/translateX`+自包含+不溢出 + 设计要求 + 图片规则);`build_html.py` 模板降级为确定性回退。
+    - `SKILL.md` Step 7B 改为"模型直接写 + 脚本回退";slide-plan 步与 `11-producer.md` 删掉"禁止手写 HTML/必须 build_html 生成"的矛盾约束。
+    - 重打包发布 zip `skills/ai-slide-producer.zip`(新版 08、含示例图、无 __MACOSX、1.77MB)。
+  - 同步:`ensure_workspace(force)` + 重 seed 默认配方 → 产品侧 skill 副本也是新版(厚版 density=2 仍在)。
+  - **诚实**:① skill 改动是指令级,质量由 ai_render(同契约同模型已证碾压)旁证,**尚未在宿主里跑 skill 单独验证**;② webapp 当前仍走 ai_render(绕过 skill 08),**ai_render 去留待定**——可跑 `JX_AI_RENDER=0` 让 agent 照 skill 自己写 HTML,既验证 skill 又决定是否统一。
+  - skill 不是独立 git 仓库(属父 Jumpxai 仓库),文件已改盘上,发布/提交由用户管。
 - **Phase 11 · 逐页内容预览 — 完成 ✅**(用户:生成前看不到每页具体内容)
   - `agent.findRunSlug`:从任意消息的 `runs/<slug>/` 路径提取 slug(生成中即可拿到,早于 finish 的 findRunId)。
   - `LiveWorkbench`:用 runSlug **生成中每 5s 轮询** `/api/runs/{slug}/plan`(slide_plan 写好前 404,写好后自动拾取);胶片缩略图变**可点**,点开 `PageDetail` 面板看该页完整内容(key_message + headline/sub + body 要点 + caption + speaker_notes + layout + 上/下页导航)。
