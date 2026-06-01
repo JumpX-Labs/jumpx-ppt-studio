@@ -22,9 +22,9 @@ ARG SKILL_REF=main
 RUN echo "拉取 skill: $SKILL_GIT_URL @ $SKILL_REF" && \
     git clone --depth 1 --branch "$SKILL_REF" "$SKILL_GIT_URL" /skill-src && \
     rm -rf /skill-src/.git && \
-    test -f /skill-src/skills/ai-slide-producer/SKILL.md || (echo "❌ 未找到 skills/ai-slide-producer/SKILL.md"; exit 1)
-# skill 源固定指向镜像内路径（覆盖 setup_workspace 的默认同级定位）
-ENV JX_SKILL_SRC=/skill-src/skills/ai-slide-producer
+    test -f /skill-src/SKILL.md || (echo "❌ 未找到 /skill-src/SKILL.md（repo 根应为 skill 本体）"; exit 1)
+# skill 源固定指向镜像内路径（覆盖 setup_workspace 的默认同级定位）；repo 根即 skill
+ENV JX_SKILL_SRC=/skill-src
 
 # —— Python 依赖（先单独 COPY 以利缓存）——
 COPY backend/requirements.txt backend/requirements.txt
