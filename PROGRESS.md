@@ -250,6 +250,12 @@
   - 同步:`ensure_workspace(force)` + 重 seed 默认配方 → 产品侧 skill 副本也是新版(厚版 density=2 仍在)。
   - **诚实**:① skill 改动是指令级,质量由 ai_render(同契约同模型已证碾压)旁证,**尚未在宿主里跑 skill 单独验证**;② webapp 当前仍走 ai_render(绕过 skill 08),**ai_render 去留待定**——可跑 `JX_AI_RENDER=0` 让 agent 照 skill 自己写 HTML,既验证 skill 又决定是否统一。
   - skill 不是独立 git 仓库(属父 Jumpxai 仓库),文件已改盘上,发布/提交由用户管。
+- **Phase 10c · 把厚内容也烤进 Skill 本体,三处统一 — 完成 ✅**(用户:就要一个修好的新 Skill)
+  - 之前把"厚内容"放在 webapp 的 `recipe_seed`(配方覆盖层),导致**裸 Skill/下载版仍是薄的**,与 Web App 不一致。
+  - 本轮把厚版 `05-writer.md`/`03-strategist.md` **烤进上游 Skill 本体**(原来只有版式 08 在本体)。现在 Skill 本体两缺陷都修好:**厚内容 + 模型直接写 HTML**。
+  - `recipe_seed/default` 删掉重复的 05/03 覆盖,只留 `manifest_overrides.json`(density=2/persona 显示)——**内容/版式唯一来源 = 基座 Skill**。重打包 `ai-slide-producer.zip`,`ensure_workspace(force)`+重 seed。
+  - **终检三处一致**:上游 Skill 源 / 发布 zip / Web App 运行态(默认配方)——内容厚版 ✓、版式新版 ✓,全部一致。
+  - **遗留**:Web App 版式当前仍由 `ai_render` 产出(同 08 契约同模型,旁证有效);要确保"下载版 Skill 在别家 agent 也复现版式",值得跑一次 `JX_AI_RENDER=0`(让 agent 照 Skill 08 自己写)。站点 Skill 展示/下载页待建。
 - **Phase 11 · 逐页内容预览 — 完成 ✅**(用户:生成前看不到每页具体内容)
   - `agent.findRunSlug`:从任意消息的 `runs/<slug>/` 路径提取 slug(生成中即可拿到,早于 finish 的 findRunId)。
   - `LiveWorkbench`:用 runSlug **生成中每 5s 轮询** `/api/runs/{slug}/plan`(slide_plan 写好前 404,写好后自动拾取);胶片缩略图变**可点**,点开 `PageDetail` 面板看该页完整内容(key_message + headline/sub + body 要点 + caption + speaker_notes + layout + 上/下页导航)。
