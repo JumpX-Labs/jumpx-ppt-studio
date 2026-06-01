@@ -97,14 +97,28 @@ def build_slides_html(project: str, minimal: bool = False) -> str:
         return f"error: 缺少 {src}/slide_plan.json —— 请先用 write_file 写好。"
     if not (src / "style_lock.json").exists():
         return f"error: 缺少 {src}/style_lock.json —— 请先用 write_file 写好。"
-    try:
-        out = build_html.build(project_dir, SKILL_ROOT, minimal=minimal)
-    except SystemExit as exc:  # build_html 用 SystemExit 报缺文件
-        return f"error: build 失败：{exc}"
-    except Exception as exc:  # noqa: BLE001
-        return f"error: build 异常：{type(exc).__name__}: {exc}"
+    # 主路径：AI 渲染器（模型直接写 HTML，质量远超模板）。失败回退模板。
+    out = project_dir / "index.html"
+    render_note = ""
+    if not minimal and os.environ.get("JX_AI_RENDER", "1") != "0":
+        try:
+            import ai_render
+            html, note = ai_render.render_deck_html(project_dir)
+            if html:
+                out.write_text(html, encoding="utf-8")
+                render_note = note
+        except Exception as exc:  # noqa: BLE001
+            render_note = f"AI 渲染异常，回退模板：{type(exc).__name__}: {exc}"
+    if not out.exists() or not render_note.startswith("AI 渲染成功"):
+        try:
+            out = build_html.build(project_dir, SKILL_ROOT, minimal=minimal)
+            render_note = render_note or "模板渲染"
+        except SystemExit as exc:  # build_html 用 SystemExit 报缺文件
+            return f"error: build 失败：{exc}"
+        except Exception as exc:  # noqa: BLE001
+            return f"error: build 异常：{type(exc).__name__}: {exc}"
     return (
-        f"已生成幻灯片：{out}\n"
+        f"已生成幻灯片：{out}（{render_note}）\n"
         f"在浏览器打开：file://{out}\n"
         f"（这是可见产物，请把该路径交给用户。）"
     )

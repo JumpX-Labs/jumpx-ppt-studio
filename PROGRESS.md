@@ -235,6 +235,12 @@
   - **支持多图**:`analyze_images([...])` 一次喂多张取统一风格;后端 `/styles/import` 收 JSON `{name,images:[dataURI]}`(原始字节单图仍兼容);前端多选 + FileReader→dataURI→JSON。
   - **验证**:多图 JSON 导入 HTTP 通;浏览器弹框正确渲染(dlg/适合/不建议/multiple=true)。`vite build` 通过。
   - **遗留**:跑一遍"UI 导入风格→用它生成 deck"完整闭环(需一次真生成 + 确认 Designer 用上 imported style_name)。
+- **Phase 10 · 版式引擎重构（模型直接写 HTML）— 完成 ✅**(用户诊断:模板/schema 太死,版式没自主性)
+  - **诊断确认**:旧渲染是纯机械模板替换——模型只能填文字 + 从 10 个死 layout 挑一个,HTML 结构(snippet)+CSS(7 文件)全锁死;`08-web-renderer` 明令"不调 LLM、不生成 CSS"。质量被模板封顶,不是模型能力问题。
+  - **spike 验证**(`spike_html.py`):同一份 slide_plan+style_lock,让 ark-code-latest 直接写整套 HTML,渲染对比模板版——**质量碾压**(封面有气场、内容页模型自绘睡眠周期柱状图、用对绿色 token、杂志式版面)。
+  - **重构**(`ai_render.py`):`render_deck_html` 让模型按 slide_plan+style_lock(设计 token)直接写整套自包含 HTML;**硬契约**保留 `#deck/.slide/translateX` 外壳(演示/导出照常);结构校验(slide 数匹配)+1 次修复;失败回退模板。接成 `build_slides_html` 主路径(`JX_AI_RENDER=1` 默认开,模板留回退)。
+  - **验证(真生成)**:`build_slides_html('sleep-redesign')` → AI 版 22KB,封面居中极简、P03 模型自绘周期柱状图+图标卡片、零溢出;export `_render_slide_pngs` 成功渲染 6 页(契约兼容)。**代价**:渲染步 +60–90s 模型调用(原模板近瞬时),换设计质量,用户优先质量。
+  - **遗留**:① 渲染→截图→自检溢出→修复回路(v1 只做结构校验,视觉溢出修复待加)② 逐页内容预览(下一步)。
 - **后续可选**:① Phase 4b-3 可编辑版 PPTX(移植 PPTAgent html2pptx,Node+pptxgenjs,接受富 CSS 主题保真退化)② Electron 桌面版(双击启动,后期)③ 出图路径(AI 配图,需图片 backend key)。**核心 MVP(生成→交互→预览→导出 PDF/PNG/PPTX/HTML→单机 Docker)已闭环。**
 
 ## 护栏自检
