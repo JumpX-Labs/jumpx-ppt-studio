@@ -1,7 +1,7 @@
 # SKILL_CONTROLLER.md · 用户可控的「配方/Skills 控制器」设计
 
 > 2026-05-31。产品定位:**一个把控制权交给用户的独立 PPT 生成器**。菜单栏提供 Skills 控制器,用户可**查看 / 合理修改 / 让 Agent 重新加载** skill;重载后**之后开始的 Slides** 用新配方。
-> 本文是该特性的设计依据,落地参考。配套:[`UX_DESIGN.md`](./UX_DESIGN.md)、[`PROGRESS.md`](./PROGRESS.md)(架构现状)。
+> 本文是该特性的设计依据,落地参考。配套:[`UX_DESIGN.md`](../01-design/UX_DESIGN.md)、[`PROGRESS.md`](../03-implementation/PROGRESS.md)(架构现状)。
 
 ---
 

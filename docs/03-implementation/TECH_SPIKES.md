@@ -1,6 +1,6 @@
 # TECH_SPIKES.md · 全量开发前的技术验证清单
 
-> 2026-05-31。目的:在按 [`PRD_v2.md`](./PRD_v2.md) 全量开发**之前**,用最小实验把高风险点验掉。每个 spike = 目标 / 做法 / 通过标准。
+> 2026-05-31。目的:在按 [`PRD_v2.md`](../02-prd/PRD_v2.md) 全量开发**之前**,用最小实验把高风险点验掉。每个 spike = 目标 / 做法 / 通过标准。
 > 基于本仓库**现有脚手架**(`backend/agent.py` 已跑通 deepagents + FilesystemBackend + skills + interrupt_on;`backend/workspace/skills/ai-slide-producer` 已挂载;`validate_slide_plan.py` 等校验器已有)。
 
 > 优先级:**S4 > S1 ≈ S2 ≈ S3 > S5 > S6**。S4(导入配方安全)最高,因为它是单机模式下唯一棘手且不可妥协的点。
@@ -48,7 +48,7 @@
 ---
 
 ## 验证产出
-每个 spike 跑完在 [`PROGRESS.md`](./PROGRESS.md) 记:通过/不过 + 结论 + 退化方案。**S1–S4 全过**再进入 [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md) 的全量阶段。
+每个 spike 跑完在 [`PROGRESS.md`](PROGRESS.md) 记:通过/不过 + 结论 + 退化方案。**S1–S4 全过**再进入 [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) 的全量阶段。
 
 ---
 

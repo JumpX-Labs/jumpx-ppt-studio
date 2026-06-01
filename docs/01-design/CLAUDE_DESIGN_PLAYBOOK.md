@@ -1,7 +1,7 @@
 # Claude Design 操作手册 · 从零上下文到产出生产代码
 
 > 给操作者(你)在 Claude Design 里一步步做出我们 AI Slides WebApp 的**专属界面**,并把代码交回给 Claude Code(我)集成进 Next.js 前端、接上 deepagents 后端。
-> 设计依据见 [`UX_DESIGN.md`](./UX_DESIGN.md)。
+> 设计依据见 [`UX_DESIGN.md`](UX_DESIGN.md)。
 > ⚠️ Claude Design 为 2026-04 发布、在我知识截止后,本手册指引的是**内容与流程**(粘贴什么、按什么顺序、产出什么);具体按钮以你看到的实际界面为准。
 
 ---

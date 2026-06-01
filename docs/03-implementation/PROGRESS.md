@@ -1,6 +1,6 @@
 # PROGRESS.md · AI Slides WebApp 脚手架
 
-> 每阶段更新。记录已做 / 卡点 / 下一步。任务宪法见 [`IMPLEMENTATION_TASK.md`](./IMPLEMENTATION_TASK.md)。
+> 每阶段更新。记录已做 / 卡点 / 下一步。任务宪法见 [`IMPLEMENTATION_TASK.md`](IMPLEMENTATION_TASK.md)。
 
 ---
 
@@ -13,18 +13,18 @@
 > HTML slides（teaching-clean，可翻页）。RESEARCH / RUN / PROGRESS 三份文档齐全。
 
 ### 📚 文档总览（2026-05-31 · v2 规格已定稿，下一步是产品化实施，今日不实施）
-- **产品**：[`PRD_v2.md`](./PRD_v2.md)（配方进 MVP、单机无账号、配方=skill=zip、可改边界、验证硬门；继承 v1 生成内核）
-- **交互/设计**：[`UX_DESIGN.md`](./UX_DESIGN.md)、[`SKILL_CONTROLLER.md`](./SKILL_CONTROLLER.md)、[`CLAUDE_DESIGN_体验拆解.md`](./CLAUDE_DESIGN_体验拆解.md)
-- **技术验证**：[`TECH_SPIKES.md`](./TECH_SPIKES.md)（开发前 6 个 spike，S4 导入配方安全最高优先）
-- **实施步骤**：[`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md)（写给未来的我：基于 LangGraph/deepagents 一步步实现整份 PRD）
-- **调研/启动**：[`RESEARCH.md`](./RESEARCH.md)、[`RUN.md`](./RUN.md)
+- **产品**：[`PRD_v2.md`](../02-prd/PRD_v2.md)（配方进 MVP、单机无账号、配方=skill=zip、可改边界、验证硬门；继承 v1 生成内核）
+- **交互/设计**：[`UX_DESIGN.md`](../01-design/UX_DESIGN.md)、[`SKILL_CONTROLLER.md`](../04-agent-control/SKILL_CONTROLLER.md)、[`CLAUDE_DESIGN_体验拆解.md`](../01-design/CLAUDE_DESIGN_体验拆解.md)
+- **技术验证**：[`TECH_SPIKES.md`](TECH_SPIKES.md)（开发前 6 个 spike，S4 导入配方安全最高优先）
+- **实施步骤**：[`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md)（写给未来的我：基于 LangGraph/deepagents 一步步实现整份 PRD）
+- **调研/启动**：[`RESEARCH.md`](../05-research/RESEARCH.md)、[`RUN.md`](../../RUN.md)
 - **可点原型**：`docs/ClaudeDesign/Jumpx Slides/原型/prototype.html` · 线上 https://jumpx-slides-demo.deeptoai.workers.dev
 
 ---
 
 ## 阶段 1 · 调研 — 完成 ✅
 
-**产出**：[`RESEARCH.md`](./RESEARCH.md)（每条都有确切做法 + 出处 + 与本项目对应）。
+**产出**：[`RESEARCH.md`](../05-research/RESEARCH.md)（每条都有确切做法 + 出处 + 与本项目对应）。
 
 **关键结论**：
 - 引擎 `deepagents 0.6.7`（Python ≥3.11）：`create_deep_agent(model=, tools=, system_prompt=, skills=["/skills/"], interrupt_on=, checkpointer=)`。
@@ -57,7 +57,7 @@
 - [x] deep-agents-ui 起得来（**:3002**，3000 被占自动跳）并连上后端。
 - [x] **浏览器实测**：对话 → `write_todos` 计划 + `get_weather`×2 工具调用 + "All tasks completed" + 流式渲染答案。
 - [x] 后端脚本侧验证：`updates`（含 todos）+ `messages/partial`（67 token chunk）流式均正常。
-- [x] 启动步骤/端口/env 写入 [`RUN.md`](./RUN.md)。
+- [x] 启动步骤/端口/env 写入 [`RUN.md`](../../RUN.md)。
 
 ---
 
@@ -102,8 +102,8 @@
 
 ## 前端 UI（专属界面，via Claude Design）
 
-- **UX 设计**：[`UX_DESIGN.md`](./UX_DESIGN.md)（4 触点 + 画布为主 + 逐页流式，基于 12+ 产品调研）。
-- **建站工具调研**：选用 **Claude Design**（Anthropic 2026-04 产品）出原型 → handoff 给 Claude Code 落地。操作手册见 [`CLAUDE_DESIGN_PLAYBOOK.md`](./CLAUDE_DESIGN_PLAYBOOK.md)。
+- **UX 设计**：[`UX_DESIGN.md`](../01-design/UX_DESIGN.md)（4 触点 + 画布为主 + 逐页流式，基于 12+ 产品调研）。
+- **建站工具调研**：选用 **Claude Design**（Anthropic 2026-04 产品）出原型 → handoff 给 Claude Code 落地。操作手册见 [`CLAUDE_DESIGN_PLAYBOOK.md`](../01-design/CLAUDE_DESIGN_PLAYBOOK.md)。
 - **设计系统（已定，源自 Claude Design handoff）**：纸感工作室暖白 `#FAF8F2` + 墨绿强调 `#2C5E48`（刻意避开内容用的蓝 `#2563EB`，形成主-客对比）+ 思源黑体/Space Grotesk/Space Mono。布局 = B 舞台优先 + 副驾 A 克制。设计源留档于 [`frontend/design-source/`](./frontend/design-source/)。
 - **已实现**：主工作台 [`frontend/workbench.html`](./frontend/workbench.html) —— 忠实复刻 Claude Design 定稿（渲染中状态：阶段进度 / 裱框舞台 / 三态待办 / 实时活动流 / 底部胶片轨 / 快捷 chip），铺满视口，已用 1440×900 预览验证通过。**当前为静态 mock**。
 - **下一步**：① 从 Claude Design 取剩余 4 屏（输入页/大纲编辑器/选模板网格/选输出卡片）② 把这些 port 成 React 组件接进前端、连 LangGraph 流（todos/files/activity 来自 stream；`choose_template`/`choose_render_mode` 的 interrupt payload → 模板网格/输出卡片，替掉 JSON 审批面板）。
@@ -115,7 +115,7 @@
   - bug 修复：选模板/选输出两处预览幻灯片继承了工作台 `.mat .slide{min(60vw,820px)}` 导致溢出 → 在 `.pv-big`/`.vframe` 内限定 `width:100%`；proto.css 链接加时间戳根治开发期缓存。
 
 - **「配方 / Skills 控制器」设计 + 原型（用户可控的 PPT 生成器方向）**：
-  - 设计文档 [`SKILL_CONTROLLER.md`](./SKILL_CONTROLLER.md)：三层模型（素材/配方/契约）、为什么"重载很轻"（FilesystemBackend live 读 + progressive disclosure，改 references 下次生成即生效；仅 frontmatter/增删 skill 才需图重载）、可改 vs 锁定边界、保存前契约校验门、改"配方"vs 改"这一份"、多用户副本 + prompt 注入安全、落地 P0/P1/P2。
+  - 设计文档 [`SKILL_CONTROLLER.md`](../04-agent-control/SKILL_CONTROLLER.md)：三层模型（素材/配方/契约）、为什么"重载很轻"（FilesystemBackend live 读 + progressive disclosure，改 references 下次生成即生效；仅 frontmatter/增删 skill 才需图重载）、可改 vs 锁定边界、保存前契约校验门、改"配方"vs 改"这一份"、多用户副本 + prompt 注入安全、落地 P0/P1/P2。
   - 原型 [`proto-skills.jsx`](docs/ClaudeDesign/Jumpx%20Slides/原型/proto-skills.jsx)：顶栏「配方」入口 → 控制器面板（skill 文件树，可改配方 references vs 🔒锁定契约/机制；右侧 Markdown 编辑/只读；底部 恢复默认/上传/校验/保存并重新加载，模拟"契约体检"成功态 + scope 提示）。已浏览器验证：开面板 / 编辑 / 重载成功 / 锁定文件只读说明。
 
 - **交互原型已发布（Cloudflare，给学员看）**：**https://jumpx-slides-demo.deeptoai.workers.dev**
@@ -249,7 +249,7 @@
     - 重打包发布 zip `skills/ai-slide-producer.zip`(新版 08、含示例图、无 __MACOSX、1.77MB)。
   - 同步:`ensure_workspace(force)` + 重 seed 默认配方 → 产品侧 skill 副本也是新版(厚版 density=2 仍在)。
   - **诚实**:① skill 改动是指令级,质量由 ai_render(同契约同模型已证碾压)旁证,**尚未在宿主里跑 skill 单独验证**;② webapp 当前仍走 ai_render(绕过 skill 08),**ai_render 去留待定**——可跑 `JX_AI_RENDER=0` 让 agent 照 skill 自己写 HTML,既验证 skill 又决定是否统一。
-  - skill 不是独立 git 仓库(属父 Jumpxai 仓库),文件已改盘上,发布/提交由用户管。
+  - （历史记录）当时 skill 尚未独立成仓库,文件先改在本地;后已发布为公开仓库 [`jumpx-ppt-forge`](https://github.com/JumpX-Labs/jumpx-ppt-forge)。
 - **Phase 10c · 把厚内容也烤进 Skill 本体,三处统一 — 完成 ✅**(用户:就要一个修好的新 Skill)
   - 之前把"厚内容"放在 webapp 的 `recipe_seed`(配方覆盖层),导致**裸 Skill/下载版仍是薄的**,与 Web App 不一致。
   - 本轮把厚版 `05-writer.md`/`03-strategist.md` **烤进上游 Skill 本体**(原来只有版式 08 在本体)。现在 Skill 本体两缺陷都修好:**厚内容 + 模型直接写 HTML**。

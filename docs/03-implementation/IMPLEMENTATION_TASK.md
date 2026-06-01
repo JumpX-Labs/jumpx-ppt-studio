@@ -1,7 +1,7 @@
 # 实施任务文档 · AI Slides WebApp 脚手架
 
 > 给执行的 Claude Code。**目标：把 deepagents 生态调研清楚 → clone → 本地跑通 → 在本目录搭好脚手架并接入我们已有的 ai-slide-producer skill。** 这一轮只到"脚手架能跑 + skill 接上"，不要求完整产品功能。
-> 工作目录：`Jumpxai/Github/ai-ppt-webapp/`（即本目录）。
+> 工作目录：本仓库根目录（`jumpx-ppt-studio`）。
 
 ---
 
@@ -14,7 +14,7 @@
 - 关键交互点 ②：**出图 还是 HTML**
 
 最终形态：网页里输入主题 → agent 自主规划(todo)、流式跑 → 到岔路口停下问用户 → 产出可见 slides → 部署上线。
-完整需求见产品 PRD（`../../01_Camps/.../Week04_Vibe_Coding/课件2_AI_Slides_WebApp完整PRD.md`）。本文件只覆盖**脚手架阶段**。
+完整需求见产品 PRD（[`docs/02-prd/PRD_v2.md`](../02-prd/PRD_v2.md)，原型出自 JumpX AI 实战营 Week04 课件）。本文件只覆盖**脚手架阶段**。
 
 ---
 
@@ -22,7 +22,7 @@
 
 - **引擎**：`deepagents`（LangGraph 之上的 agent harness；自带 planning / 虚拟文件系统 / 子 agent / human-in-the-loop 中断 / skills）。
 - **不要**改成裸 LangGraph 手工连图，也不要换 OpenAI Agents SDK——选型理由见 `deepagents_调研_v1.md`。
-- **交互层**靠 deepagents 的中断（human-in-the-loop / `ask_clarification` 式）实现，参考 DeerFlow 范式（`../../07_Research/DeerFlow借鉴调研_AI_PPT产品_v1.md`）。
+- **交互层**靠 deepagents 的中断（human-in-the-loop / `ask_clarification` 式）实现，参考 DeerFlow 范式（见 [`docs/05-research/`](../05-research/) 调研）。
 
 ---
 
@@ -125,8 +125,8 @@ ai-ppt-webapp/
 > 浏览器打开 UI → 输入一个主题 → 看到 agent 规划与流式 → 在"选模板"和"出图/HTML"两处被询问并能继续 → 最终产出一份可见 slides。并且 `RESEARCH.md` / `RUN.md` / `PROGRESS.md` 三份文档齐全，下一个人能照着继续。
 
 参考资料：
-- 产品 PRD：`../../01_Camps/ai_camp/202605_Cohort01/02_Weeks/Week04_Vibe_Coding/课件2_AI_Slides_WebApp完整PRD.md`
-- PRD 拆解（步骤/调研/确认/风险）：`../../01_Camps/.../Week04_Vibe_Coding/课件3_PRD拆解_实施步骤与风险.md`
-- deepagents 调研：`../../01_Camps/.../Week04_Vibe_Coding/deepagents_调研_v1.md`
-- DeerFlow 借鉴（交互层/UX 范式）：`../../07_Research/DeerFlow借鉴调研_AI_PPT产品_v1.md`
-- 现有 skill：`../jumpx-ppt-slides-skill/`
+- 产品 PRD：[`docs/02-prd/PRD_v2.md`](../02-prd/PRD_v2.md)
+- deepagents / DeerFlow 等调研：[`docs/05-research/`](../05-research/)
+- 配套设计：[`docs/01-design/`](../01-design/)
+- skill 本体：[`jumpx-ppt-forge`](https://github.com/JumpX-Labs/jumpx-ppt-forge)（构建时自动拉取）
+- 选型背景与课程脉络：JumpX AI 实战营 · Week04 Vibe Coding

@@ -1,13 +1,13 @@
 # IMPLEMENTATION_PLAN.md · 一步步用 LangGraph/deepagents 实现 PRD v2
 
-> 写给**未来接手的我**(一个全新上下文的编码 agent)。读完这份 + [`PRD_v2.md`](./PRD_v2.md) + [`TECH_SPIKES.md`](./TECH_SPIKES.md),你应能从现状直接续做,不必重新调研。
+> 写给**未来接手的我**(一个全新上下文的编码 agent)。读完这份 + [`PRD_v2.md`](../02-prd/PRD_v2.md) + [`TECH_SPIKES.md`](TECH_SPIKES.md),你应能从现状直接续做,不必重新调研。
 > **现状**:阶段 1-3 已完成(调研→本地跑通→接 skill 端到端产 HTML);交互原型 + 配方系统已在 `docs/ClaudeDesign/Jumpx Slides/原型/` 做出并部署。现在要把它**产品化**成 PRD v2。
 
 ---
 
 ## 0. 先读这些(orientation)
 
-- **真相来源**:[`PROGRESS.md`](./PROGRESS.md)(进度/已做/卡点)、[`RESEARCH.md`](./RESEARCH.md)(deepagents/LangGraph 确切做法+出处)。
+- **真相来源**:[`PROGRESS.md`](PROGRESS.md)(进度/已做/卡点)、[`RESEARCH.md`](../05-research/RESEARCH.md)(deepagents/LangGraph 确切做法+出处)。
 - **已跑通的后端脚手架**:`backend/agent.py`(create_deep_agent + ChatOpenAI[火山方舟] + FilesystemBackend + skills + interrupt_on)、`backend/slide_tools.py`(4 个 web 层工具)、`backend/setup_workspace.py`(把 skill 复制进 workspace)、`backend/langgraph.json`。
 - **skill 资产**(只读引用,勿改原件):`../jumpx-ppt-slides-skill/skills/ai-slide-producer/`(SKILL.md + references + schemas + scripts:`build_html.py`/`validate_slide_plan.py`/…)。
 - **前端原型(目标形态)**:`docs/ClaudeDesign/Jumpx Slides/原型/`(proto-*.jsx)——React 组件 + proto.css 设计系统;已是要 port 的蓝本。线上:https://jumpx-slides-demo.deeptoai.workers.dev

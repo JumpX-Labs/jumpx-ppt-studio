@@ -1,7 +1,7 @@
 # PRD v2 · Jumpx Slides — 可掌控配方的 AI 幻灯片生成器
 
-> 2026-05-31。v2 在 [课件2 完整PRD v1](../../01_Camps/ai_camp/202605_Cohort01/02_Weeks/Week04_Vibe_Coding/课件2_AI_Slides_WebApp完整PRD.md) 的**生成内核之上**叠加两件事:**① 把"配方(skill)"变成用户可看/可改/可换的一等资产;② 落成单机、无账号的独立产品。**
-> 配套文档:[`UX_DESIGN.md`](./UX_DESIGN.md)(交互)、[`SKILL_CONTROLLER.md`](./SKILL_CONTROLLER.md)(配方控制器)、[`TECH_SPIKES.md`](./TECH_SPIKES.md)(技术验证)、[`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md)(实施)。
+> 2026-05-31。v2 在 课件2 完整PRD v1（JumpX AI 实战营 Week04 课件） 的**生成内核之上**叠加两件事:**① 把"配方(skill)"变成用户可看/可改/可换的一等资产;② 落成单机、无账号的独立产品。**
+> 配套文档:[`UX_DESIGN.md`](../01-design/UX_DESIGN.md)(交互)、[`SKILL_CONTROLLER.md`](../04-agent-control/SKILL_CONTROLLER.md)(配方控制器)、[`TECH_SPIKES.md`](../03-implementation/TECH_SPIKES.md)(技术验证)、[`IMPLEMENTATION_PLAN.md`](../03-implementation/IMPLEMENTATION_PLAN.md)(实施)。
 
 ---
 
@@ -216,6 +216,6 @@
 ---
 
 ## 16. 文档关系
-- 交互细节 → [`UX_DESIGN.md`](./UX_DESIGN.md);配方控制器 → [`SKILL_CONTROLLER.md`](./SKILL_CONTROLLER.md)。
-- 技术验证 → [`TECH_SPIKES.md`](./TECH_SPIKES.md);实施步骤 → [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md)。
+- 交互细节 → [`UX_DESIGN.md`](../01-design/UX_DESIGN.md);配方控制器 → [`SKILL_CONTROLLER.md`](../04-agent-control/SKILL_CONTROLLER.md)。
+- 技术验证 → [`TECH_SPIKES.md`](../03-implementation/TECH_SPIKES.md);实施步骤 → [`IMPLEMENTATION_PLAN.md`](../03-implementation/IMPLEMENTATION_PLAN.md)。
 - 交互原型(可点)→ `docs/ClaudeDesign/Jumpx Slides/原型/prototype.html`;线上 demo → https://jumpx-slides-demo.deeptoai.workers.dev
