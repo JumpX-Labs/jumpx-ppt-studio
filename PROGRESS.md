@@ -255,7 +255,11 @@
   - 本轮把厚版 `05-writer.md`/`03-strategist.md` **烤进上游 Skill 本体**(原来只有版式 08 在本体)。现在 Skill 本体两缺陷都修好:**厚内容 + 模型直接写 HTML**。
   - `recipe_seed/default` 删掉重复的 05/03 覆盖,只留 `manifest_overrides.json`(density=2/persona 显示)——**内容/版式唯一来源 = 基座 Skill**。重打包 `ai-slide-producer.zip`,`ensure_workspace(force)`+重 seed。
   - **终检三处一致**:上游 Skill 源 / 发布 zip / Web App 运行态(默认配方)——内容厚版 ✓、版式新版 ✓,全部一致。
-  - **遗留**:Web App 版式当前仍由 `ai_render` 产出(同 08 契约同模型,旁证有效);要确保"下载版 Skill 在别家 agent 也复现版式",值得跑一次 `JX_AI_RENDER=0`(让 agent 照 Skill 08 自己写)。站点 Skill 展示/下载页待建。
+- **Phase 12 · Skill 自给自足验证 + 站点展示/下载页 — 完成 ✅**
+  - **验证(`verify_skill_render.py`)**:把发布版 Skill 的 `08-web-renderer.md` **原文**当指令 + 真 slide_plan/style_lock 喂给模型(模拟别家 agent 装了此 Skill),产出 6 页 HTML——封面设计师级、内容页**模型自绘睡眠周期波形曲线**。证明:**Skill 自带指令足以让别家 agent 复现效果**(不靠 webapp 的 ai_render)。
+  - **Skill 独立页**:`backend/skill_api.py`(`GET /skill` 读默认配方的 SKILL.md+角色文档+资产清单;`GET /skill/file/{name}` 读角色原文)。`frontend SkillPage.jsx`:Hero(名称/描述/**下载 .zip**/"展示=下载=运行同一份"担保)+ 两缺陷已修卡片 + 生产管线 + 14 角色文档(点开看原文)+ 资产概览(10 版式/7 风格/脚本)。`?skill` URL 或顶栏入口进入。
+  - **三处一致(终检)**:下载 = `/api/recipes/default/export`(运行态导出);展示 = 读同一默认配方;Web App 运行 = 默认配方。**同一份文件，构造上不可能漂移**。浏览器实测:页面渲染、下载指向运行态、08 角色文档显示新版原文。`vite build` 通过。
+  - **遗留(非阻塞)**:Web App 渲染当前走 `ai_render`(与 Skill 08 同契约同模型);若要"webapp 也直接照 Skill 跑"可退掉 ai_render 让 agent 自写——已验证可行,留作后续统一。
 - **Phase 11 · 逐页内容预览 — 完成 ✅**(用户:生成前看不到每页具体内容)
   - `agent.findRunSlug`:从任意消息的 `runs/<slug>/` 路径提取 slug(生成中即可拿到,早于 finish 的 findRunId)。
   - `LiveWorkbench`:用 runSlug **生成中每 5s 轮询** `/api/runs/{slug}/plan`(slide_plan 写好前 404,写好后自动拾取);胶片缩略图变**可点**,点开 `PageDetail` 面板看该页完整内容(key_message + headline/sub + body 要点 + caption + speaker_notes + layout + 上/下页导航)。

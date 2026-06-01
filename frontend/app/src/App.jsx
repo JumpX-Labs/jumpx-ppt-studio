@@ -7,6 +7,7 @@ import { useAgent, startRun, readInterrupt, runFinished, findOutputPath, findRun
 import { LiveWorkbench } from './LiveWorkbench.jsx'
 import { PresentStage, PresenterView } from './Present.jsx'
 import { StyleLibrary } from './StyleLibrary.jsx'
+import { SkillPage } from './SkillPage.jsx'
 
 // —— App：状态机 + 顶栏阶段条 + 路由 + 明暗 Tweak + 规划过渡 + 导出菜单 ——
 // 依赖 Screens / Workbench、proto.css
@@ -62,6 +63,7 @@ function App() {
   const presentParam = _params.get('present');
   const presenterRole = _params.get('role') === 'presenter';
   const [presentId, setPresentId] = useStateA(presentParam && !presenterRole ? presentParam : null);
+  const [skillOpen, setSkillOpen] = useStateA(_params.get('skill') != null);
 
   const agent = useAgent();
   const tplName = (TEMPLATES.find(t => t.id === tpl) || {}).name || '素白';
@@ -116,8 +118,9 @@ function App() {
     const darkBtn = <button className="iconbtn" title="明 / 暗" onClick={() => setDark(d => !d)}>{dark ? sun : moon}</button>;
     const skillsBtn = <button className="iconbtn" title="配方 / Skills" onClick={() => setSkillsOpen(true)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7h10M4 12h7M4 17h10" /><circle cx="18" cy="7" r="2.2" /><circle cx="14" cy="12" r="2.2" /><circle cx="18" cy="17" r="2.2" /></svg></button>;
     const styleLibBtn = <button className="iconbtn" title="样式库" onClick={() => setStyleLibOpen(true)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="13.5" cy="6.5" r="2.5" /><circle cx="17.5" cy="12.5" r="2.5" /><circle cx="8.5" cy="7.5" r="2.5" /><circle cx="6.5" cy="13.5" r="2.5" /><path d="M12 22a10 10 0 1 1 10-10c0 2-2 3-4 3h-2a2 2 0 0 0-1 4 2 2 0 0 1-3 3z" /></svg></button>;
+    const skillBtn = <button className="iconbtn" title="Skill 展示 / 下载" onClick={() => setSkillOpen(true)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" /><path d="M12 3v18M4 7.5l8 4.5 8-4.5" /></svg></button>;
     if (live) return (
-      <div className="tb-right" style={{ position: 'relative' }}>{skillsBtn}{styleLibBtn}{darkBtn}
+      <div className="tb-right" style={{ position: 'relative' }}>{skillsBtn}{styleLibBtn}{skillBtn}{darkBtn}
         {finished && runId ? <>
           <button className="btn" onClick={() => setPresentId(runId)}>▶ 演示</button>
           <button className="btn primary" onClick={() => setExportOpen(o => !o)}>导出 ▾</button>
@@ -146,15 +149,15 @@ function App() {
         )}
       </div>
     );
-    if (screen === 'input') return <div className="tb-right">{skillsBtn}{styleLibBtn}{darkBtn}</div>;
-    if (screen === 'outline') return <div className="tb-right">{skillsBtn}{styleLibBtn}{darkBtn}<button className="btn primary" onClick={() => setScreen('template')}>确认大纲 · 选模板 {arrow}</button></div>;
-    if (screen === 'template') return <div className="tb-right">{skillsBtn}{styleLibBtn}{darkBtn}<button className="btn" onClick={() => setScreen('outline')}>{back} 返回大纲</button><button className="btn primary" onClick={() => setScreen('output')}>用「{tplName}」· 下一步 {arrow}</button></div>;
-    if (screen === 'output') return <div className="tb-right">{skillsBtn}{styleLibBtn}{darkBtn}<button className="btn" onClick={() => setScreen('template')}>{back} 返回模板</button><button className="btn primary" onClick={() => startRender(mode)}>用 {mode === 'html' ? 'HTML' : 'AI 配图'} 生成 · 开始 {arrow}</button></div>;
+    if (screen === 'input') return <div className="tb-right">{skillsBtn}{styleLibBtn}{skillBtn}{darkBtn}</div>;
+    if (screen === 'outline') return <div className="tb-right">{skillsBtn}{styleLibBtn}{skillBtn}{darkBtn}<button className="btn primary" onClick={() => setScreen('template')}>确认大纲 · 选模板 {arrow}</button></div>;
+    if (screen === 'template') return <div className="tb-right">{skillsBtn}{styleLibBtn}{skillBtn}{darkBtn}<button className="btn" onClick={() => setScreen('outline')}>{back} 返回大纲</button><button className="btn primary" onClick={() => setScreen('output')}>用「{tplName}」· 下一步 {arrow}</button></div>;
+    if (screen === 'output') return <div className="tb-right">{skillsBtn}{styleLibBtn}{skillBtn}{darkBtn}<button className="btn" onClick={() => setScreen('template')}>{back} 返回模板</button><button className="btn primary" onClick={() => startRender(mode)}>用 {mode === 'html' ? 'HTML' : 'AI 配图'} 生成 · 开始 {arrow}</button></div>;
     // workbench
-    if (!wbDone) return <div className="tb-right">{skillsBtn}{styleLibBtn}{darkBtn}<button className="btn dis">导出 · 待完成</button></div>;
+    if (!wbDone) return <div className="tb-right">{skillsBtn}{styleLibBtn}{skillBtn}{darkBtn}<button className="btn dis">导出 · 待完成</button></div>;
     return (
       <div className="tb-right" style={{ position: 'relative' }}>
-        {skillsBtn}{styleLibBtn}{darkBtn}
+        {skillsBtn}{styleLibBtn}{skillBtn}{darkBtn}
         <button className="btn">分享</button>
         <button className="btn primary" onClick={() => setExportOpen(o => !o)}>导出 ▾</button>
                 {exportOpen && (
@@ -170,6 +173,12 @@ function App() {
       </div>
     );
   }
+
+  // Skill 独立页（?skill 或 顶栏入口）
+  if (skillOpen) return <SkillPage onClose={() => {
+    setSkillOpen(false);
+    if (_params.get('skill') != null && typeof window !== 'undefined') window.history.replaceState({}, '', window.location.pathname);
+  }} />;
 
   // 演讲者视图（独立标签）/ 观众舞台（全屏覆盖）——优先于常规界面
   if (presentParam && presenterRole) return <PresenterView runId={presentParam} />;

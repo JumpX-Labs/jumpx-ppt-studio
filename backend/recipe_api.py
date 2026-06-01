@@ -21,6 +21,7 @@ import recipes as R
 import runs as RUN
 import export_deck as EXPORT
 import style_import as STYLE
+import skill_api as SKILL
 
 R.ensure_recipes()
 
@@ -102,6 +103,20 @@ async def export_recipe(request):
 
 async def revalidate(request):
     return JSONResponse(R.revalidate_all())
+
+
+# —— Skill 展示/下载（站点独立页）：唯一真相 = 默认配方 = 运行态 ——
+
+async def skill_overview(request):
+    return JSONResponse(SKILL.skill_overview())
+
+
+async def skill_file(request):
+    txt = SKILL.skill_file(request.path_params["name"])
+    if txt is None:
+        return JSONResponse({"error": "not found"}, status_code=404)
+    from starlette.responses import PlainTextResponse
+    return PlainTextResponse(txt)
 
 
 # —— 风格导入（视觉模型 skill）：上传图片 → 识别风格 → 产出新 preset 进当前配方 ——
@@ -246,6 +261,8 @@ routes = [
     Route("/extract", extract_text, methods=["POST"]),
     Route("/styles", list_styles, methods=["GET"]),
     Route("/styles/import", import_style, methods=["POST"]),
+    Route("/skill", skill_overview, methods=["GET"]),
+    Route("/skill/file/{name}", skill_file, methods=["GET"]),
     Route("/recipes/import", import_recipe, methods=["POST"]),
     Route("/recipes/{id}", get_recipe, methods=["GET"]),
     Route("/recipes/{id}", save_recipe, methods=["PUT"]),

@@ -14,6 +14,8 @@ export default defineConfig({
       '/api/extract': { target: 'http://127.0.0.1:2025', changeOrigin: true, rewrite: p => p.replace(/^\/api/, '') },
       // 风格导入（上传图片 → 视觉模型识别 → 新 preset）
       '/api/styles': { target: 'http://127.0.0.1:2025', changeOrigin: true, rewrite: p => p.replace(/^\/api/, '') },
+      // Skill 展示/下载独立页
+      '/api/skill': { target: 'http://127.0.0.1:2025', changeOrigin: true, rewrite: p => p.replace(/^\/api/, '') },
       // LangGraph server（生成 agent，langgraph dev :2024）
       '/lg': { target: 'http://127.0.0.1:2024', changeOrigin: true, ws: true, rewrite: p => p.replace(/^\/lg/, '') },
     },

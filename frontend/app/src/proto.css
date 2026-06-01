@@ -737,6 +737,47 @@ button{font-family:inherit}
 .pd-cap{font-size:12px;color:var(--ink-3);font-style:italic;margin-bottom:12px}
 .pd-notes{background:var(--paper-1);border:1px solid var(--hair-soft);border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.75;color:var(--ink-2);white-space:pre-wrap}
 .pd-notes-h{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+/* ============ Skill 展示 + 下载 独立页 ============ */
+.skp{position:fixed;inset:0;z-index:200;background:var(--paper-0);overflow:auto}
+.skp-loading{display:grid;place-items:center;height:100vh;color:var(--ink-3)}
+.skp-top{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--hair-soft);position:sticky;top:0;background:var(--paper-0);z-index:2}
+.skp-brand{display:flex;align-items:center;gap:9px;font-weight:600}
+.skp-brand .tb-glyph{width:24px;height:24px}
+.skp-wrap{max-width:880px;margin:0 auto;padding:36px 28px 80px}
+.skp-hero{text-align:center;padding:24px 0 12px}
+.skp-tag{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--pine);background:var(--pine-soft);display:inline-block;padding:4px 12px;border-radius:20px}
+.skp-hero h1{font-size:40px;margin:16px 0 0;font-weight:760}
+.skp-ver{font-size:16px;color:var(--ink-3);font-weight:500}
+.skp-desc{font-size:15px;color:var(--ink-2);line-height:1.7;max-width:680px;margin:14px auto 0}
+.skp-cta{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:24px}
+.btn.lg{font-size:16px;padding:14px 28px;border-radius:12px}
+.skp-assure{font-size:12.5px;color:var(--ink-3)}
+.skp-assure b{color:var(--pine-deep)}
+.skp-pitch{font-size:13px;color:var(--ink-3);margin-top:14px;line-height:1.7}
+.skp-fixes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:36px}
+.skp-fix{border:1px solid var(--hair);border-radius:12px;padding:18px 20px;background:var(--paper-1)}
+.skp-fix-h{font-size:15px;font-weight:600;margin-bottom:8px}
+.skp-fix p{font-size:13px;color:var(--ink-2);line-height:1.7;margin:0}
+.skp-sec-h{font-size:13px;font-weight:700;color:var(--ink-3);letter-spacing:.04em;margin:36px 0 14px}
+.skp-pipe{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.skp-step{font-size:12.5px;background:var(--paper-2);border:1px solid var(--hair);border-radius:8px;padding:6px 11px;white-space:nowrap}
+.skp-arrow{color:var(--ink-4);font-size:12px}
+.skp-refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.skp-ref{display:flex;flex-direction:column;align-items:flex-start;gap:3px;border:1px solid var(--hair);border-radius:10px;padding:11px 13px;background:var(--paper-1);cursor:pointer;text-align:left}
+.skp-ref:hover{border-color:var(--pine);background:var(--pine-soft)}
+.skp-ref-label{font-size:13.5px;font-weight:600;color:var(--ink)}
+.skp-ref-file{font-size:11px;color:var(--ink-4);font-family:var(--font-mono,monospace)}
+.skp-assets{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.skp-asset{border:1px solid var(--hair);border-radius:12px;padding:16px;background:var(--paper-1)}
+.skp-asset b{font-size:26px;color:var(--pine-deep)}
+.skp-asset-sub{font-size:11px;color:var(--ink-3);margin-top:6px;line-height:1.5;word-break:break-word}
+.skp-doc-mask{position:fixed;inset:0;z-index:340;background:rgba(20,24,22,.45);backdrop-filter:blur(3px);display:grid;place-items:center;padding:36px}
+.skp-doc{background:var(--paper-0);border:1px solid var(--hair);border-radius:14px;box-shadow:var(--shadow-card);width:min(820px,100%);max-height:84vh;display:flex;flex-direction:column;overflow:hidden}
+.skp-doc-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--hair-soft)}
+.skp-doc-h b{font-size:14px}
+.skp-doc-h span{font-size:12px;color:var(--ink-4)}
+.skp-doc-h .skp-sp{flex:1}
+.skp-doc-body{margin:0;padding:18px 20px;overflow:auto;font-size:12.5px;line-height:1.7;color:var(--ink);white-space:pre-wrap;font-family:var(--font-mono,monospace)}
 /* 完成态：内嵌预览生成的 deck */
 .live-done{position:absolute;inset:0;display:flex;flex-direction:column;padding:18px 22px 22px}
 .ld-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
