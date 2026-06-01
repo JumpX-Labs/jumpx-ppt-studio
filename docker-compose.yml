@@ -1,18 +1,18 @@
 # Jumpx Slides · 单机启动
-#   SKILL_URL=<ai-slide-producer release zip 的 URL> docker compose up --build
+#   docker compose up --build          # 开箱即用：skill 默认从公开仓库构建时拉取
 #   打开 http://localhost:5180
 #
-# 前置：① backend/.env 已填火山方舟 base_url/api_key（见 backend/.env.example）
-#       ② 设环境变量 SKILL_URL = ai-slide-producer 发布 zip 的 URL（构建时拉进镜像）。
-#          镜像自包含——部署机不需要再单独有 jumpx-ppt-slides-skill 仓库。
+# 前置：backend/.env 已填火山方舟 base_url/api_key（见 backend/.env.example）。
+# skill 在构建时从 JumpX-Labs/jumpx-ppt-forge 拉进镜像（镜像自包含，部署机不需要单独有 skill 仓库）。
+# 钉版本：设 SKILL_REF=<tag/commit>（默认 main）。私有/换源：设 SKILL_GIT_URL。
 services:
   jumpx-slides:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        # skill 的固定版本 release zip URL（GitHub release / R2 / 任意静态托管）
-        SKILL_URL: ${SKILL_URL:?请设置 SKILL_URL=skill 发布 zip 的 URL}
+        SKILL_GIT_URL: ${SKILL_GIT_URL:-https://github.com/JumpX-Labs/jumpx-ppt-forge.git}
+        SKILL_REF: ${SKILL_REF:-main}
     image: jumpx-slides:latest
     ports:
       - "5180:5180"

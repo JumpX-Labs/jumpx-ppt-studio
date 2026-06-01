@@ -8,7 +8,7 @@
 ## 0. 你会拿到什么（源码位置）
 
 **只需要 `ai-ppt-webapp` 这一个仓库**（开发者机器上的绝对路径：`/Users/peng/Jumpxai/Github/ai-ppt-webapp`）。
-ai-slide-producer skill **不需要单独下载**——它在**构建镜像时**按你给的 `SKILL_URL` 自动拉取并烤进镜像（见 §2/§3）。镜像自包含，部署机上不需要 skill 仓库。
+ai-slide-producer skill **不需要单独下载**——它在**构建镜像时**从公开仓库 `JumpX-Labs/jumpx-ppt-forge` 自动拉取并烤进镜像（默认开箱即用，见 §2/§3）。镜像自包含，部署机上不需要 skill 仓库。
 
 > 注意：`backend/.env`（含密钥）被 `.gitignore` 拦截，**不在 git 里**，需单独索取（见 §2）；`backend/workspace/`（运行产物）不用拷，容器自建持久卷。
 
@@ -45,15 +45,12 @@ cp .env.example .env        # 若机器上还没有 .env
 #（编辑 .env，把 ARK_BASE_URL / ARK_API_KEY 等填成从开发者 .env 拿到的真实值）
 ```
 
-### 另一个必需项：`SKILL_URL`（skill 发布 zip 的地址）
+### skill 怎么来：构建时自动拉，**默认开箱即用**
 
-构建镜像时要拉 ai-slide-producer skill 的**固定版本 zip**（顶层为 `ai-slide-producer/`）。
-向开发者索取这个 URL（GitHub release / R2 / 任意静态托管的 `ai-slide-producer-vX.Y.Z.zip`），构建时通过环境变量传入：
-
-```bash
-export SKILL_URL="https://<开发者提供的 skill 发布 zip 地址>"
-```
-> 建议 URL 指向带版本号的具体 release（如 `...-v0.2.0.zip`），这样 webapp 钉死一个 skill 版本，可复现。
+ai-slide-producer skill 在**构建镜像时**从公开仓库自动拉取并烤进镜像——**默认无需任何配置**：
+- 默认源：`https://github.com/JumpX-Labs/jumpx-ppt-forge.git`，默认分支 `main`。
+- **钉版本（推荐生产用）**：`export SKILL_REF=v0.2.0`（指向一个 tag/commit，保证可复现）。
+- 换源/私有仓库：`export SKILL_GIT_URL=...`（私有需在构建环境配 git 凭据）。
 
 ---
 
@@ -61,11 +58,10 @@ export SKILL_URL="https://<开发者提供的 skill 发布 zip 地址>"
 
 ```bash
 cd ai-ppt-webapp
-export SKILL_URL="https://<skill 发布 zip 地址>"   # 见 §2，构建时拉 skill 进镜像
-docker compose up --build -d     # 首次构建+后台启动（首次数分钟）
-docker compose logs -f           # 看启动日志（含首启动自检结果）
+# export SKILL_REF=v0.2.0          # 可选：钉 skill 版本（生产推荐）；不设则用 main
+docker compose up --build -d       # 首次构建+后台启动（首次数分钟，构建时自动拉 skill）
+docker compose logs -f             # 看启动日志（含首启动自检结果）
 ```
-> 构建时若没设 `SKILL_URL`，会立即报错提示。
 
 容器启动时会先跑自检 `selfcheck.py`：检查 `.env` 模型配置 / chromium / skill / 依赖 / 配方。**任一必需项缺失会在日志里明确报错并退出**——按提示补齐即可。
 
@@ -99,7 +95,7 @@ curl -s -o /dev/null -w "LG %{http_code}\n"  http://localhost:5180/lg/ok        
 容器只暴露 `:5180`（HTTP）。要域名 + HTTPS：在前面挂一个反向代理（Nginx / Caddy / Traefik）把 443 转发到 `127.0.0.1:5180` 即可。
 > 注意：**无内置鉴权**。若部署到公网，请自行在反向代理层加访问控制（Basic Auth / IP 白名单 / SSO），或只在内网/VPN 内访问。
 
-容器 PaaS（Render / Fly.io / Railway / 云 VM）都能直接吃这个 `Dockerfile`，自带域名+HTTPS，比裸机省事。镜像已自包含（skill 构建时拉进去），只要在平台的构建设置里配好 `SKILL_URL` build-arg 即可。
+容器 PaaS（Render / Fly.io / Railway / 云 VM）都能直接吃这个 `Dockerfile`，自带域名+HTTPS，比裸机省事。镜像已自包含（skill 构建时从公开仓库拉进去），默认开箱即用；如需钉版本在平台构建设置里配 `SKILL_REF` build-arg。
 
 ---
 
@@ -125,6 +121,6 @@ docker compose exec jumpx-slides python backend/selfcheck.py  # 重跑自检
 | 现象 | 多半原因 |
 |------|----------|
 | 自检报 `.env` 缺失/模型配置 | `backend/.env` 没填或值不对（§2）|
-| 构建报 SKILL_URL 错误 / 自检报 skill 缺失 | `SKILL_URL` 没设或地址拉不到（§2/§3）；重新 `--build` |
+| 构建报 skill 拉取失败 / 自检报 skill 缺失 | 构建机无法访问 `SKILL_GIT_URL`（默认 GitHub），或 `SKILL_REF` 不存在；查网络/ref，重新 `--build` |
 | 生成卡住 / `/lg/ok` 非 200 | 方舟 key/额度/网络问题，看 langgraph.log |
 | 导出 PDF/PNG 失败 | chromium 异常，看 recipe_api.log（一般镜像已自带）|

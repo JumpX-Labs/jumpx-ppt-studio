@@ -7,17 +7,16 @@
 
 ## ⭐ 方式 A：Docker 一键启动（推荐 · 单机交付）
 
-前置：① `backend/.env` 已填火山方舟 `ARK_BASE_URL` / `ARK_API_KEY`（模板见 `backend/.env.example`）；
-② 设 `SKILL_URL` = ai-slide-producer 发布 zip 的 URL（构建时拉进镜像，镜像自包含）。
+前置：`backend/.env` 已填火山方舟 `ARK_BASE_URL` / `ARK_API_KEY`（模板见 `backend/.env.example`）。
 
 ```bash
-export SKILL_URL="https://<skill 发布 zip 地址>"
-docker compose up --build      # 首次构建并启动（基础镜像较大，首次数分钟）
+docker compose up --build      # 开箱即用（基础镜像较大，首次数分钟）
 # 打开 http://localhost:5180
+# 钉 skill 版本（可选）：SKILL_REF=v0.2.0 docker compose up --build
 ```
 
 - 一个容器跑齐三进程：`langgraph dev`(:2024) + `recipe_api`(:2025) + `vite`(:5180，仅它对外)。
-- skill 在**构建时**按 `SKILL_URL` 拉取并烤进镜像——部署机不需要单独有 skill 仓库。
+- skill 在**构建时**从公开仓库 `JumpX-Labs/jumpx-ppt-forge` 拉取并烤进镜像（默认 `main`，可用 `SKILL_REF` 钉版本）——部署机不需要单独有 skill 仓库。
 - 启动前跑 `selfcheck.py` 自检（.env / chromium / skill / 依赖 / 配方），缺什么报什么。
 - 交付/部署详见 [`DEPLOYMENT.md`](./DEPLOYMENT.md)。
 - 产物与配方持久化在 docker volume `jumpx-workspace`（`runs/`、`recipes/` 跨重启保留）。
