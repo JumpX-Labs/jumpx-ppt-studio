@@ -34,6 +34,50 @@ function findSlidePlan(files) {
   if (!key) return null
   try { return JSON.parse(files[key]) } catch { return null }
 }
+// 选模板：显示每套 preset 的真实渲染缩略图（预烤，/api/presets）
+function TemplateChooser({ stream, args }) {
+  const rec = Array.isArray(args.recommended) ? args.recommended : []
+  const [presets, setPresets] = React.useState(null)
+  React.useEffect(() => {
+    let alive = true
+    fetch('/api/presets').then(r => (r.ok ? r.json() : null))
+      .then(d => { if (alive && d) setPresets(d.presets || []) }).catch(() => { })
+    return () => { alive = false }
+  }, [])
+  const meta = {}
+  ;(presets || []).forEach(p => { meta[p.id] = p })
+  const ids = [...new Set([...rec, ...REAL_PRESETS])]
+  return (
+    <div className="live-overlay">
+      <div className="ov-card wide">
+        <div className="ov-h">选一套模板 <span>{args.note || 'AI 推荐高亮；缩略图是该风格的真实渲染样例'}</span></div>
+        <div className="ov-tpls grid">
+          {ids.map(p => {
+            const m = meta[p] || {}
+            // 优先用内容页缩略图（更能体现版式），退而求其次用封面
+            const thumb = (m.thumbs && (m.thumbs[1] || m.thumbs[0])) || null
+            const isRec = rec.includes(p)
+            return (
+              <button key={p} className={'ov-tpl card' + (isRec ? ' rec' : '')} onClick={() => respondInterrupt(stream, p)}>
+                <div className="ov-tpl-thumb">
+                  {thumb
+                    ? <img src={thumb} alt={p} loading="lazy" />
+                    : <div className="ov-tpl-noimg">{presets ? '暂无预览' : '加载中…'}</div>}
+                  {isRec && <span className="star">★ 推荐</span>}
+                </div>
+                <div className="ov-tpl-meta">
+                  <b>{m.display_name || p}</b>
+                  <i>{m.mood || p}</i>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Overlay({ stream }) {
   const intr = readInterrupt(stream)
   if (!intr) return null
@@ -44,22 +88,7 @@ function Overlay({ stream }) {
   }
 
   if (name === 'choose_template') {
-    const rec = Array.isArray(args.recommended) ? args.recommended : []
-    const list = [...new Set([...rec, ...REAL_PRESETS])]
-    return (
-      <div className="live-overlay">
-        <div className="ov-card wide">
-          <div className="ov-h">选一套模板 <span>{args.note || 'AI 推荐高亮；点选即用'}</span></div>
-          <div className="ov-tpls">
-            {list.map(p => (
-              <button key={p} className={'ov-tpl' + (rec.includes(p) ? ' rec' : '')} onClick={() => respondInterrupt(stream, p)}>
-                {rec.includes(p) && <span className="star">★</span>}{p}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
+    return <TemplateChooser stream={stream} args={args} />
   }
 
   if (name === 'choose_render_mode') {

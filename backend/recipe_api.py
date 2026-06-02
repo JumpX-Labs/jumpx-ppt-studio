@@ -17,13 +17,20 @@ from starlette.applications import Starlette
 from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Route
 
+import json
+from pathlib import Path
+
 import recipes as R
 import runs as RUN
 import export_deck as EXPORT
 import style_import as STYLE
 import skill_api as SKILL
+from setup_workspace import SKILL_DST
 
 R.ensure_recipes()
+
+PREVIEW_DIR = Path(__file__).parent / "preset_previews"   # 预烤的选模板缩略图
+PRESET_DIR = SKILL_DST / "assets" / "style-presets"       # preset 源（取展示名/基调）
 
 
 async def list_recipes(request):
@@ -254,7 +261,45 @@ async def export_pptx(request):
         media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation")
 
 
+# ——— 选模板缩略图（预烤，见 build_preset_previews.py）———
+
+async def list_presets(request):
+    """列出 7 套 preset + 展示名 + 基调 + 缩略图 URL（供选模板界面用）。"""
+    items = []
+    pjs = sorted(PRESET_DIR.glob("*.json")) if PRESET_DIR.exists() else []
+    for pj in pjs:
+        try:
+            d = json.loads(pj.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        pid = d.get("style_name") or pj.stem
+        thumbs = [f"/api/presets/{pid}/thumb/{n}" for n in (1, 2)
+                  if (PREVIEW_DIR / f"{pid}-{n}.png").exists()]
+        items.append({"id": pid, "display_name": d.get("display_name") or pid,
+                      "mood": d.get("mood", ""), "thumbs": thumbs})
+    if not items:  # 退化：无 preset 源时从已有缩略图文件名推
+        for p in sorted(PREVIEW_DIR.glob("*-1.png")):
+            pid = p.stem[:-2]
+            thumbs = [f"/api/presets/{pid}/thumb/{n}" for n in (1, 2)
+                      if (PREVIEW_DIR / f"{pid}-{n}.png").exists()]
+            items.append({"id": pid, "display_name": pid, "mood": "", "thumbs": thumbs})
+    return JSONResponse({"presets": items})
+
+
+async def preset_thumb(request):
+    pid = request.path_params.get("id", "")
+    n = request.path_params.get("n", "")
+    if not re.fullmatch(r"[a-z0-9-]+", pid) or n not in ("1", "2"):
+        return JSONResponse({"error": "bad request"}, status_code=400)
+    p = PREVIEW_DIR / f"{pid}-{n}.png"
+    if not p.exists():
+        return JSONResponse({"error": "not found"}, status_code=404)
+    return FileResponse(p, media_type="image/png")
+
+
 routes = [
+    Route("/presets", list_presets, methods=["GET"]),
+    Route("/presets/{id}/thumb/{n}", preset_thumb, methods=["GET"]),
     Route("/recipes", list_recipes, methods=["GET"]),
     Route("/recipes/active", set_active, methods=["POST"]),
     Route("/recipes/revalidate", revalidate, methods=["POST"]),
