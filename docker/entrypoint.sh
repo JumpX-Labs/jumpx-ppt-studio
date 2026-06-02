@@ -30,4 +30,4 @@ done
 
 echo "[entrypoint] 启动 vite :5180（对外）..."
 cd /app/frontend/app
-exec npm run dev -- --host 0.0.0.0 --port 5180 --allowed-hosts all
+exec npm run dev -- --host 0.0.0.0 --port 5180
