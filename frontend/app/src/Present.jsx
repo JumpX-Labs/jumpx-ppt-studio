@@ -1,6 +1,7 @@
 // 轻量现场演示模式（借鉴 Slidev：固定画布+scale、键盘表、BroadcastChannel 双窗同步、演讲者视图）。
 // 不引 Vue。deck 与本 app 同源 → 直接读/驱动 iframe 里的 #deck transform。
 import React from 'react'
+import { BrandMark } from './Brand.jsx'
 
 const LOGICAL_W = 1280, LOGICAL_H = 720
 const viewURL = (id) => `/api/runs/${id}/view`
@@ -140,6 +141,7 @@ export function PresentStage({ runId, onExit }) {
 
   return (
     <div className="present-stage">
+      <BrandMark onDark className="ps-brand" />
       <iframe ref={frameRef} title="deck" src={viewURL(runId)} className="ps-frame" onLoad={onFrameLoad} />
       <div className="ps-bar">
         <button className="ps-btn" onClick={() => go(-1)} aria-label="上一页">‹</button>

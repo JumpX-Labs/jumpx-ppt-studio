@@ -1,5 +1,6 @@
 // Skill 展示 + 下载 独立页。展示/下载都读同一份运行态（默认配方）→ 天然一致。
 import React from 'react'
+import { BrandLink } from './Brand.jsx'
 
 const ROLE_DOT = '·'
 
@@ -26,7 +27,7 @@ export function SkillPage({ onClose }) {
   return (
     <div className="skp">
       <div className="skp-top">
-        <div className="skp-brand"><div className="tb-glyph" /><span>Jumpx Slides</span></div>
+        <BrandLink sub="PPT Studio" />
         {onClose && <button className="btn" onClick={onClose}>← 返回</button>}
       </div>
 

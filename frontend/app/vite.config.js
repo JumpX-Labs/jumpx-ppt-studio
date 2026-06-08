@@ -17,6 +17,8 @@ export default defineConfig({
       '/api/styles': { target: 'http://127.0.0.1:2025', changeOrigin: true, rewrite: p => p.replace(/^\/api/, '') },
       // Skill 展示/下载独立页
       '/api/skill': { target: 'http://127.0.0.1:2025', changeOrigin: true, rewrite: p => p.replace(/^\/api/, '') },
+      // 模型能力配置（providers：填 key / 测连接 / 能力状态）
+      '/api/providers': { target: 'http://127.0.0.1:2025', changeOrigin: true, rewrite: p => p.replace(/^\/api/, '') },
       // 选模板缩略图（预烤）
       '/api/presets': { target: 'http://127.0.0.1:2025', changeOrigin: true, rewrite: p => p.replace(/^\/api/, '') },
       // LangGraph server（生成 agent，langgraph dev :2024）

@@ -25,6 +25,7 @@ import runs as RUN
 import export_deck as EXPORT
 import style_import as STYLE
 import skill_api as SKILL
+import providers as PROV
 from setup_workspace import SKILL_DST
 
 R.ensure_recipes()
@@ -297,7 +298,47 @@ async def preset_thumb(request):
     return FileResponse(p, media_type="image/png")
 
 
+# ——— 模型能力（Providers）：BYO-key，按 STUDIO_TENANCY 决定能否落盘 ———
+
+async def get_providers(request):
+    """当前模型能力状态（含 tenancy / 能力徽章 / masked，**绝不回明文 key**）。"""
+    return JSONResponse(PROV.public_state())
+
+
+async def post_providers(request):
+    """保存模型能力到本机（仅 local 模式）。shared 模式 → 403。"""
+    try:
+        body = await request.json()
+    except Exception:  # noqa: BLE001
+        return JSONResponse({"error": "需要 JSON body"}, status_code=400)
+    try:
+        return JSONResponse(PROV.save(body))
+    except PermissionError as e:
+        return JSONResponse({"error": str(e)}, status_code=403)
+    except ValueError as e:
+        return JSONResponse({"error": str(e)}, status_code=400)
+
+
+async def test_provider(request):
+    """测试连接（不存储）。mock 看 Pillow；openai/text 用 models.list 验 key。"""
+    try:
+        body = await request.json()
+    except Exception:  # noqa: BLE001
+        return JSONResponse({"error": "需要 JSON body"}, status_code=400)
+    res = PROV.test_connection(
+        kind=str(body.get("kind", "image")),
+        provider=str(body.get("provider", "")),
+        api_key=str(body.get("api_key", "")),
+        base_url=str(body.get("base_url", "")),
+        model=str(body.get("model", "")),
+    )
+    return JSONResponse(res)
+
+
 routes = [
+    Route("/providers", get_providers, methods=["GET"]),
+    Route("/providers", post_providers, methods=["POST"]),
+    Route("/providers/test", test_provider, methods=["POST"]),
     Route("/presets", list_presets, methods=["GET"]),
     Route("/presets/{id}/thumb/{n}", preset_thumb, methods=["GET"]),
     Route("/recipes", list_recipes, methods=["GET"]),

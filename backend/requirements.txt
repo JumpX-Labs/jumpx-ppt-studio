@@ -8,6 +8,8 @@ python-dotenv>=1.0.0
 playwright>=1.40
 # 图片忠实版 PPTX（Phase 4b-2）：每页截图铺满一张 16:9 幻灯片
 python-pptx>=1.0
+# mock 图片后端：无 key 也能出品牌占位图，让 image-first 端到端可演示
+Pillow>=10.0
 # 多格式资料解析（Phase 8b）：PDF/Word/PPTX/Excel/HTML → Markdown，喂进 Context Pack。
 # 离线、MIT、核心无 ML 依赖；不装 [all] 以免引入 azure/audio。
 markitdown[pdf,docx,pptx,xlsx]>=0.1.0

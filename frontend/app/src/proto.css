@@ -45,6 +45,27 @@ button{font-family:inherit}
 .tb-glyph::after{content:"";position:absolute;inset:11px 6px 6px 6px;border-radius:2px;background:#fff;opacity:.42}
 .tb-name{font-family:var(--font-num);font-weight:600;font-size:14px;color:var(--ink)}
 .tb-divline{width:1px;height:22px;background:var(--hair)}
+
+/* ===== JumpX 品牌标 + 官网跳转 ===== */
+.brand-link{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);border-radius:7px;padding:3px 6px;margin:-3px -2px;transition:.16s;flex:none}
+.brand-link:hover{background:var(--paper-2)}
+.brand-mark{display:block;flex:none;border-radius:6px}
+.brand-word{font-family:var(--font-num);font-weight:600;font-size:14px;color:var(--ink);white-space:nowrap}
+.brand-sub{color:var(--ink-3);font-weight:500;margin-left:6px}
+.brand-ext{flex:none;color:var(--ink-3);opacity:0;transform:translateX(-3px);transition:.16s}
+.brand-link:hover .brand-ext{opacity:1;transform:none}
+.brand-link.on-dark{color:#fff}
+.brand-link.on-dark .brand-word{color:#fff}
+.brand-link.on-dark:hover{background:rgba(255,255,255,.12)}
+.brand-link.on-dark .brand-sub,.brand-link.on-dark .brand-ext{color:rgba(255,255,255,.65)}
+/* 静态标（演示舞台角落，不可点，避免误触） */
+.brand-mark-static{display:inline-flex;align-items:center;gap:8px}
+.brand-mark-static .brand-word{font-family:var(--font-num);font-weight:600;font-size:13px;color:var(--ink)}
+.brand-mark-static.on-dark .brand-word{color:#fff}
+.brand-mark-static.on-dark .brand-mark{box-shadow:0 0 0 1px rgba(255,255,255,.28)}
+.ps-brand{position:absolute;left:18px;top:14px;z-index:4;opacity:.4;transition:opacity .2s;pointer-events:none}
+.present-stage:hover .ps-brand{opacity:.72}
+
 .proj{display:flex;align-items:center;gap:8px;min-width:0}
 .proj .t{font-size:13.5px;font-weight:500;white-space:nowrap}
 .proj .chap{font-size:13.5px;color:var(--ink-3);white-space:nowrap}
@@ -800,3 +821,49 @@ button{font-family:inherit}
 .ld-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .ld-h{font-size:15px;font-weight:600;color:var(--pine-deep)}
 .ld-frame{flex:1;width:100%;border:1px solid var(--hair);border-radius:12px;box-shadow:var(--shadow-card);background:#fff}
+
+/* ===== 模型能力配置（Providers） ===== */
+.pv-back{position:fixed;inset:0;z-index:120;background:rgba(20,21,16,.42);display:flex;align-items:flex-start;justify-content:center;padding:48px 16px;overflow:auto;animation:fade .2s ease}
+.pv-sheet{width:min(560px,100%);background:var(--paper-1);border:1px solid var(--hair);border-radius:12px;box-shadow:var(--shadow-card);padding:22px 24px 18px}
+.pv-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.pv-title{font-weight:700;font-size:18px;color:var(--ink);display:flex;align-items:center;gap:10px}
+.pv-mode{font-family:var(--font-mono);font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--hair)}
+.pv-mode-local{color:var(--pine);background:var(--pine-soft);border-color:var(--pine-line)}
+.pv-mode-shared{color:var(--amber);background:var(--amber-soft)}
+.pv-caps{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pv-cap{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-3);border:1px solid var(--hair);border-radius:8px;padding:6px 11px}
+.pv-cap i{width:8px;height:8px;border-radius:50%;background:var(--ink-4)}
+.pv-cap.on{color:var(--ink)}
+.pv-cap.on i{background:var(--pine)}
+.pv-cap b{font-weight:600;color:var(--ink-3);font-family:var(--font-mono);font-size:11px}
+.pv-cap.on b{color:var(--pine)}
+.pv-note{font-size:12.5px;line-height:1.7;color:var(--ink-2);background:var(--paper-2);border-radius:8px;padding:9px 12px;margin-bottom:6px}
+.pv-sec{border-top:1px solid var(--hair);padding-top:14px;margin-top:10px}
+.pv-sec-h{font-weight:600;font-size:14px;color:var(--ink);margin-bottom:11px}
+.pv-sec-h span{font-weight:400;font-size:12px;color:var(--ink-3)}
+.pv-f{display:grid;grid-template-columns:84px 1fr;align-items:center;gap:10px;margin-bottom:9px}
+.pv-f>span{font-size:13px;color:var(--ink-2)}
+.pv-f input{border:1px solid var(--hair);border-radius:7px;padding:8px 11px;font-family:var(--font-mono);font-size:13px;background:var(--paper-0);color:var(--ink);width:100%}
+.pv-f input:focus{outline:none;border-color:var(--pine)}
+.pv-providers{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 11px}
+.pv-prov{text-align:left;border:1px solid var(--hair);border-radius:8px;padding:9px 11px;background:var(--paper-1);cursor:pointer;transition:.15s}
+.pv-prov:hover{border-color:var(--ink-4)}
+.pv-prov.on{border-color:var(--pine);background:var(--pine-soft)}
+.pv-prov b{display:block;font-size:13px;color:var(--ink)}
+.pv-prov span{font-size:11px;color:var(--ink-3)}
+.pv-hint{font-size:12px;color:var(--ink-3);line-height:1.6;margin:2px 0 8px}
+.pv-msg{font-size:13px;border-radius:8px;padding:9px 12px;margin-top:10px;font-family:var(--font-mono)}
+.pv-msg.ok{color:var(--pine);background:var(--pine-soft)}
+.pv-msg.err{color:#a3392f;background:#f4e6e2}
+.pv-foot{display:flex;align-items:center;gap:14px;margin-top:14px;padding-top:12px;border-top:1px solid var(--hair)}
+.pv-foot-note{font-size:12px;color:var(--ink-3)}
+.pv-f select{border:1px solid var(--hair);border-radius:7px;padding:8px 11px;font-family:var(--font-mono);font-size:13px;background:var(--paper-0);color:var(--ink);width:100%}
+.pv-f select:focus{outline:none;border-color:var(--pine)}
+.pv-row{display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap}
+.pv-mini{font-size:11.5px;color:var(--ink-3)}
+.pv-mockrow{margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pv-mock{font-size:12px;color:var(--ink-2);background:none;border:1px dashed var(--line-2,#c7c2b4);border-radius:7px;padding:6px 11px;cursor:pointer;transition:.15s}
+.pv-mock:hover{border-color:var(--ink-4)}
+.pv-mock.on{color:var(--pine);border-color:var(--pine-line);background:var(--pine-soft)}
+.btn.ghost{background:none;border-color:transparent;color:var(--ink-3)}
+.btn.ghost:hover{color:var(--ink)}
